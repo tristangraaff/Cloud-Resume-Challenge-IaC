@@ -22,11 +22,11 @@ Resources:
     Type: 'AWS::S3::Bucket'
     Properties:
       BucketName: tristantech.org-iac
-      BucketEncryption:
-        ServerSideEncryptionConfiguration:
-          BucketKeyEnabled: true
-          - ServerSideEncryptionByDefault: 
-              SSEAlgorithm: AES256
+      #BucketEncryption:
+        #ServerSideEncryptionConfiguration:
+          #BucketKeyEnabled: true
+          #- ServerSideEncryptionByDefault: 
+              #SSEAlgorithm: AES256
       #LoggingConfiguration: LoggingConfiguration
       #MetricsConfigurations: MetricsConfiguration
       PublicAccessBlockConfiguration:
