@@ -1,0 +1,171 @@
+body {
+    font-family: 'Roboto', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #ffffff;
+    background: #282828;
+}
+
+.container {
+    width: 100%;
+    max-width: 900px;
+    margin: 20px auto;
+    
+    padding: 20px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    animation: fadeIn 1s ease-in-out;
+}
+
+.wrapper-bar {
+    height: 48px;
+    background: linear-gradient(to right, #3517CE, #3517CE 45%, #8800D6 55%, #8800D6 100%);
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding: 0 20px;
+}
+
+.wrapper-bar #website-name {
+    color: #ffffff;
+    margin: 0;
+    font-size: 1.4em;
+    flex-grow: 1;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+}
+
+.wrapper-bar .link {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 1.2em;
+    margin-left: 20px;
+    transition: color 0.3s ease-in-out;
+}
+
+.wrapper-bar .link:hover {
+    color: #ffcc00;
+}
+
+
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+header h1 {
+    margin-bottom: 10px;
+    font-size: 2.5em;
+    color: #ffffff;
+    animation: textSlideIn 1s ease-in-out;
+}
+
+@keyframes textSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+header p {
+    font-size: 1.1em;
+    color: #ffffff;
+}
+
+.section {
+    margin-bottom: 30px;
+    border-left: 4px solid #283593;
+    padding-left: 15px;
+}
+
+.section h2 {
+    border-bottom: 2px solid #283593;
+    padding-bottom: 10px;
+    font-size: 1.8em;
+    color: #ffffff;
+    position: relative;
+}
+
+.section h2::after {
+    content: '';
+    position: absolute;
+    width: 50px;
+    height: 3px;
+    background: #283593;
+    bottom: -10px;
+    left: 0;
+    animation: underlineSlideIn 0.5s ease-in-out;
+}
+
+@keyframes underlineSlideIn {
+    from {
+        width: 0;
+    }
+    to {
+        width: 50px;
+    }
+}
+
+.section h3 {
+    margin-top: 10px;
+    font-size: 1.5em;
+    color: #333;
+}
+
+.section p, .section ul {
+    margin: 10px 0;
+    font-size: 1.1em;
+    line-height: 1.6em;
+}
+
+.section ul {
+    padding-left: 20px;
+}
+
+.section ul li {
+    list-style-type: disc;
+    margin: 5px 0;
+    animation: listItemFadeIn 1s ease-in-out;
+}
+
+@keyframes listItemFadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .container {
+        width: 95%;
+        padding: 15px;
+    }
+
+    header h1 {
+        font-size: 2em;
+    }
+
+    header p, .section h2, .section h3, .section p, .section ul {
+        font-size: 1em;
+    }
+}
