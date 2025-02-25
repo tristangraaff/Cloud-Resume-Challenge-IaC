@@ -47,7 +47,7 @@ Resources:
         IgnorePublicAcls: false
         BlockPublicPolicy: false
         BlockPublicAcls: false
-      BucketName: tristantech.org
+      BucketName: tristantech.org-iac
       OwnershipControls:
         Rules:
           - ObjectOwnership: BucketOwnerEnforced
@@ -56,6 +56,8 @@ Resources:
           - BucketKeyEnabled: true
             ServerSideEncryptionByDefault:
               SSEAlgorithm: AES256
+      WebsiteConfiguration:
+        IndexDocument: index.html 
       #LoggingConfiguration:
         #TargetObjectKeyFormat:
           #PartitionedPrefix:
@@ -63,18 +65,18 @@ Resources:
         #DestinationBucketName: logs.tristantech.org
         #LogFilePrefix: logs/
 
-Resources:
-  FrontEndBucket:
-    Type: 'AWS::S3::Bucket'
-    Properties:
-      BucketName: tristantech.org-iac
-      PublicAccessBlockConfiguration:
-        BlockPublicAcls: false
-        BlockPublicPolicy: false
-        IgnorePublicAcls: false
-        RestrictPublicBuckets: false
-      WebsiteConfiguration:
-        IndexDocument: index.html
+#Resources:
+  #FrontEndBucket:
+    #Type: 'AWS::S3::Bucket'
+    #Properties:
+      #BucketName: tristantech.org-iac
+      #PublicAccessBlockConfiguration:
+        #BlockPublicAcls: false
+        #BlockPublicPolicy: false
+        #IgnorePublicAcls: false
+        #RestrictPublicBuckets: false
+      #WebsiteConfiguration:
+        #IndexDocument: index.html
 
   #FrontEndBucketPolicy:
     #UpdateReplacePolicy: Delete
