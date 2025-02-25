@@ -18,22 +18,12 @@ Globals:
     TracingEnabled: true
 
 Resources:
-  FrontEndBucket:
-    Type: 'AWS::S3::Bucket'
-    Properties:
-      BucketName: tristantech.org-iac
-      PublicAccessBlockConfiguration:
-        BlockPublicAcls: false
-        BlockPublicPolicy: false
-        IgnorePublicAcls: false
-        RestrictPublicBuckets: false
-      WebsiteConfiguration:
-        IndexDocument: index.html
   FrontEndBucketPolicy:
+    UpdateReplacePolicy: Delete
     Type: 'AWS::S3::BucketPolicy'
+    DeletionPolicy: Delete
     Properties:
-      Bucket:
-        Ref: 'FrontEndBucket'
+      Bucket: !Ref FrontEndBucket
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -45,8 +35,66 @@ Resources:
               Fn::Join:
                 - ''
                 - - 'arn:aws:s3:::'
-                  - Ref: 'TristanTechOrgIacBucket'
+                  - Ref: 'FrontEndBucket'
                   - '/*'
+  FrontEndBucket:
+    UpdateReplacePolicy: Delete
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Delete
+    Properties:
+      PublicAccessBlockConfiguration:
+        RestrictPublicBuckets: false
+        IgnorePublicAcls: false
+        BlockPublicPolicy: false
+        BlockPublicAcls: false
+      BucketName: tristantech.org
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - BucketKeyEnabled: true
+            ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      #LoggingConfiguration:
+        #TargetObjectKeyFormat:
+          #PartitionedPrefix:
+            #PartitionDateSource: EventTime
+        #DestinationBucketName: logs.tristantech.org
+        #LogFilePrefix: logs/
+
+Resources:
+  FrontEndBucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: tristantech.org-iac
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+      WebsiteConfiguration:
+        IndexDocument: index.html
+
+  #FrontEndBucketPolicy:
+    #UpdateReplacePolicy: Delete
+    #Type: AWS::S3::BucketPolicy
+    #DeletionPolicy: Delete
+    #Properties:
+      #Bucket: !Ref FrontEndBucket
+      #PolicyDocument:
+        #Version: '2008-10-17'
+        #Statement:
+          #- Condition:
+              #StringEquals:
+                #AWS:SourceArn: arn:aws:cloudfront::912311480070:distribution/EQU3YZHVKAPX4
+            #Resource: arn:aws:s3:::tristantech.org/*
+            #Action: s3:GetObject
+            #Effect: Allow
+            #Principal:
+              #Service: cloudfront.amazonaws.com
+            #Sid: AllowCloudFrontServicePrincipal
+        #Id: PolicyForCloudFrontPrivateContent
 
   #
   #HelloWorldFunction:
