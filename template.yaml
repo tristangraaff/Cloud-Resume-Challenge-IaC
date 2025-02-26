@@ -20,23 +20,30 @@ Globals:
 Resources:
   FrontEndBucketPolicy:
     UpdateReplacePolicy: Delete
-    Type: 'AWS::S3::BucketPolicy'
+    Type: AWS::S3::BucketPolicy
     DeletionPolicy: Delete
     Properties:
       Bucket: !Ref FrontEndBucket
       PolicyDocument:
-        Version: '2012-10-17'
+        Version: '2008-10-17'
         Statement:
-          - Sid: PublicReadForGetBucketObjects
+          - Condition:
+              StringEquals:
+                AWS:SourceArn: 
+                  Fn::Join:
+                   - ''
+                   - - 'arn:aws:cloudfront::'
+                     - !Ref 'AWS::AccountId'
+                     - ':distribution/'
+                     - !Ref CloudFrontDistribution
+            Resource: arn:aws:s3:::tristantech.org-iac/*
+            Action: s3:GetObject
             Effect: Allow
-            Principal: '*'
-            Action: 's3:GetObject'
-            Resource:
-              Fn::Join:
-                - ''
-                - - 'arn:aws:s3:::'
-                  - Ref: 'FrontEndBucket'
-                  - '/*'
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Sid: AllowCloudFrontServicePrincipal
+        Id: PolicyForCloudFrontPrivateContent
+
   FrontEndBucket:
     UpdateReplacePolicy: Delete
     Type: AWS::S3::Bucket
@@ -56,14 +63,128 @@ Resources:
           - BucketKeyEnabled: true
             ServerSideEncryptionByDefault:
               SSEAlgorithm: AES256
-      WebsiteConfiguration:
-        IndexDocument: index.html 
+      #WebsiteConfiguration:
+        #IndexDocument: index.html 
       #LoggingConfiguration:
         #TargetObjectKeyFormat:
           #PartitionedPrefix:
             #PartitionDateSource: EventTime
         #DestinationBucketName: logs.tristantech.org
         #LogFilePrefix: logs/
+
+  CloudFrontCachePolicy:
+    UpdateReplacePolicy: "Delete"
+    Type: "AWS::CloudFront::CachePolicy"
+    DeletionPolicy: "Delete"
+    Properties:
+      CachePolicyConfig:
+        Comment: "Policy with caching enabled. Supports Gzip and Brotli compression."
+        MinTTL: 1
+        MaxTTL: 3.1536E7
+        ParametersInCacheKeyAndForwardedToOrigin:
+          QueryStringsConfig:
+            QueryStringBehavior: "none"
+          EnableAcceptEncodingBrotli: true
+          HeadersConfig:
+            HeaderBehavior: "none"
+          CookiesConfig:
+            CookieBehavior: "none"
+          EnableAcceptEncodingGzip: true
+        DefaultTTL: 86400
+        Name: "Managed-CachingOptimized"
+
+  CloudFrontDistribution:
+    UpdateReplacePolicy: "Delete"
+    Type: "AWS::CloudFront::Distribution"
+    DeletionPolicy: "Delete"
+    Properties:
+      DistributionConfig:
+        Logging:
+          IncludeCookies: false
+          Bucket: ""
+          Prefix: ""
+        Comment: ""
+        DefaultRootObject: "index.html"
+        Origins:
+        - ConnectionTimeout: 10
+          OriginAccessControlId:
+            Ref: "CloudFrontOriginAccessControl"
+          ConnectionAttempts: 3
+          OriginCustomHeaders: []
+          DomainName:
+            Fn::GetAtt:
+            - "FrontEndBucket"
+            - "RegionalDomainName"
+          OriginShield:
+            Enabled: false
+          S3OriginConfig:
+            OriginAccessIdentity: ""
+          OriginPath: ""
+          Id: "tristantech.org-iac"
+        ViewerCertificate:
+          MinimumProtocolVersion: "TLSv1.2_2021"
+          SslSupportMethod: "sni-only"
+          CloudFrontDefaultCertificate: false
+          AcmCertificateArn: "arn:aws:acm:us-east-1:912311480070:certificate/80bf7507-ed8a-4de8-b7eb-56ef0c286e42"
+        PriceClass: "PriceClass_100"
+        DefaultCacheBehavior:
+          Compress: true
+          FunctionAssociations: []
+          LambdaFunctionAssociations: []
+          TargetOriginId: "tristantech.org-iac"
+          ViewerProtocolPolicy: "redirect-to-https"
+          GrpcConfig:
+            Enabled: false
+          TrustedSigners: []
+          FieldLevelEncryptionId: ""
+          TrustedKeyGroups: []
+          AllowedMethods:
+          - "HEAD"
+          - "GET"
+          CachedMethods:
+          - "HEAD"
+          - "GET"
+          SmoothStreaming: false
+          CachePolicyId:
+            Ref: "CloudFrontCachePolicy"
+        Staging: false
+        CustomErrorResponses:
+        - ErrorCachingMinTTL: 10
+          ResponseCode: 403
+          ErrorCode: 403
+          ResponsePagePath: "/error-pages/403.html"
+        - ErrorCachingMinTTL: 10
+          ResponseCode: 404
+          ErrorCode: 404
+          ResponsePagePath: "/error-pages/404.html"
+        ContinuousDeploymentPolicyId: ""
+        OriginGroups:
+          Quantity: 0
+          Items: []
+        Enabled: true
+        Aliases:
+        - "tristantech.org"
+        - "www.tristantech.org"
+        IPV6Enabled: true
+        WebACLId: "arn:aws:wafv2:us-east-1:912311480070:global/webacl/CreatedByCloudFront-891b1432-5997-49e0-855f-bb709f051c9d/25a6a306-4657-4b01-8950-fe03f500012a"
+        HttpVersion: "http2"
+        Restrictions:
+          GeoRestriction:
+            Locations: []
+            RestrictionType: "none"
+        CacheBehaviors: []
+
+  CloudFrontOriginAccessControl:
+    UpdateReplacePolicy: "Delete"
+    Type: "AWS::CloudFront::OriginAccessControl"
+    DeletionPolicy: "Delete"
+    Properties:
+      OriginAccessControlConfig:
+        SigningBehavior: "always"
+        Description: ""
+        SigningProtocol: "sigv4"
+        OriginAccessControlOriginType: "s3"
+        Name: "${FrontEndBucket}.s3.eu-central-1.amazonaws.com"
 
 #Resources:
   #FrontEndBucket:
@@ -77,27 +198,26 @@ Resources:
         #RestrictPublicBuckets: false
       #WebsiteConfiguration:
         #IndexDocument: index.html
-
+        
   #FrontEndBucketPolicy:
     #UpdateReplacePolicy: Delete
-    #Type: AWS::S3::BucketPolicy
+    #Type: 'AWS::S3::BucketPolicy'
     #DeletionPolicy: Delete
     #Properties:
       #Bucket: !Ref FrontEndBucket
       #PolicyDocument:
-        #Version: '2008-10-17'
+        #Version: '2012-10-17'
         #Statement:
-          #- Condition:
-              #StringEquals:
-                #AWS:SourceArn: arn:aws:cloudfront::912311480070:distribution/EQU3YZHVKAPX4
-            #Resource: arn:aws:s3:::tristantech.org/*
-            #Action: s3:GetObject
+          #- Sid: PublicReadForGetBucketObjects
             #Effect: Allow
-            #Principal:
-              #Service: cloudfront.amazonaws.com
-            #Sid: AllowCloudFrontServicePrincipal
-        #Id: PolicyForCloudFrontPrivateContent
-
+            #Principal: '*'
+            #Action: 's3:GetObject'
+            #Resource:
+              #Fn::Join:
+                #- ''
+                #- - 'arn:aws:s3:::'
+                  #- Ref: 'FrontEndBucket'
+                  #- '/*'
   #
   #HelloWorldFunction:
     #Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
