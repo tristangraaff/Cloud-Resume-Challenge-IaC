@@ -91,7 +91,7 @@ Resources:
             CookieBehavior: "none"
           EnableAcceptEncodingGzip: true
         DefaultTTL: 86400
-        Name: "Managed-CachingOptimized"
+        Name: "Custom-CachingOptimized"
 
   CloudFrontDistribution:
     UpdateReplacePolicy: "Delete"
@@ -124,7 +124,6 @@ Resources:
         ViewerCertificate:
           MinimumProtocolVersion: "TLSv1.2_2021"
           SslSupportMethod: "sni-only"
-          CloudFrontDefaultCertificate: false
           AcmCertificateArn: "arn:aws:acm:us-east-1:912311480070:certificate/80bf7507-ed8a-4de8-b7eb-56ef0c286e42"
         PriceClass: "PriceClass_100"
         DefaultCacheBehavior:
@@ -185,6 +184,27 @@ Resources:
         SigningProtocol: "sigv4"
         OriginAccessControlOriginType: "s3"
         Name: "${FrontEndBucket}.s3.eu-central-1.amazonaws.com"
+
+    
+  myDNS:
+    Type: 'AWS::Route53::RecordSetGroup'
+    Properties:
+      HostedZoneId: Z00273233K0LGAJK7OZOH
+      RecordSets:
+        - Name: tristantech.org
+          Type: A
+          AliasTarget:
+            HostedZoneId: E2SKZ6P117PHQA
+            DNSName: !GetAtt 
+              - CloudFrontDistribution
+              - DomainName
+        - Name: www.tristantech.org
+          Type: A
+          AliasTarget:
+            HostedZoneId: E2SKZ6P117PHQA
+            DNSName: !GetAtt 
+            - CloudFrontDistribution
+            - DomainName
 
 #Resources:
   #FrontEndBucket:
