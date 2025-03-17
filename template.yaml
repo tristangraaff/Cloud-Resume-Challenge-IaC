@@ -206,6 +206,35 @@ Resources:
             - CloudFrontDistribution
             - DomainName
 
+  DynamoDBTable:
+    UpdateReplacePolicy: "Delete"
+    Type: "AWS::DynamoDB::Table"
+    DeletionPolicy: "Delete"
+    Properties:
+      SSESpecification:
+        SSEEnabled: false
+      TableName: "website-visits-iac"
+      AttributeDefinitions:
+      - AttributeType: "S"
+        AttributeName: "count_id"
+      ContributorInsightsSpecification:
+        Enabled: false
+      BillingMode: "PAY_PER_REQUEST"
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+        RecoveryPeriodInDays: 35
+      WarmThroughput:
+        ReadUnitsPerSecond: 12000
+        WriteUnitsPerSecond: 4000
+      KeySchema:
+      - KeyType: "HASH"
+        AttributeName: "count_id"
+      DeletionProtectionEnabled: false
+      TableClass: "STANDARD"
+      Tags: []
+      TimeToLiveSpecification:
+        Enabled: false
+
 #Resources:
   #FrontEndBucket:
     #Type: 'AWS::S3::Bucket'
