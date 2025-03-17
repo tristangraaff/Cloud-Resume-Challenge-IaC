@@ -194,14 +194,14 @@ Resources:
         - Name: tristantech.org
           Type: A
           AliasTarget:
-            HostedZoneId: E2SKZ6P117PHQA
+            HostedZoneId: Z2FDTNDATAQYW2
             DNSName: !GetAtt 
               - CloudFrontDistribution
               - DomainName
         - Name: www.tristantech.org
           Type: A
           AliasTarget:
-            HostedZoneId: E2SKZ6P117PHQA
+            HostedZoneId: Z2FDTNDATAQYW2
             DNSName: !GetAtt 
             - CloudFrontDistribution
             - DomainName
