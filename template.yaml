@@ -17,50 +17,50 @@ Globals:
   Api:
     TracingEnabled: true
 
-Parameters:
-  LambdaFunction00countNumberOfWebsiteVisitors00pXgkjCodeS3BucketkdDlK:
-    NoEcho: "true"
-    Type: "String"
-    Description: "An Amazon S3 bucket in the same AWS-Region as your function. The\
-      \ bucket can be in a different AWS-account."
-  LambdaFunction00countNumberOfWebsiteVisitors00pXgkjCodeImageUrit188N:
-    NoEcho: "true"
-    Type: "String"
-    Description: "URI of a [container image](https://docs.aws.amazon.com/lambda/latest/dg/lambda-images.html)\
-      \ in the Amazon ECR registry."
-  LambdaFunction00countNumberOfWebsiteVisitors00pXgkjCodeSourceKMSKeyArn4C0qI:
-    NoEcho: "true"
-    Type: "String"
-    Description: "The ARN of the KMSlong (KMS) customer managed key that's used to\
-      \ encrypt your function's .zip deployment package. If you don't provide a customer\
-      \ managed key, Lambda uses an [owned key](https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#aws-owned-cmk)."
-  LambdaFunction00countNumberOfWebsiteVisitors00pXgkjCodeS3KeyqnJ4m:
-    NoEcho: "true"
-    Type: "String"
-    Description: "The Amazon S3 key of the deployment package."
-  LambdaFunction00countNumberOfWebsiteVisitors00pXgkjCodeZipFilev4439:
-    NoEcho: "true"
-    Type: "String"
-    Description: "(Node.js and Python) The source code of your Lambda function. If\
-      \ you include your function source inline with this parameter, CFN places it\
-      \ in a file named ``index`` and zips it to create a [deployment package](https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-package.html).\
-      \ This zip file cannot exceed 4MB. For the ``Handler`` property, the first part\
-      \ of the handler identifier must be ``index``. For example, ``index.handler``.\n\
-      \  When you specify source code inline for a Node.js function, the ``index``\
-      \ file that CFN creates uses the extension ``.js``. This means that LAM treats\
-      \ the file as a CommonJS module. ES modules aren't supported for inline functions.\n\
-      \   For JSON, you must escape quotes and special characters such as newline\
-      \ (``\\n``) with a backslash.\n If you specify a function that interacts with\
-      \ an AWS CloudFormation custom resource, you don't have to write your own functions\
-      \ to send responses to the custom resource that invoked the function. AWS CloudFormation\
-      \ provides a response module ([cfn-response](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-lambda-function-code-cfnresponsemodule.html))\
-      \ that simplifies sending responses. See [Using Lambda with CloudFormation](https://docs.aws.amazon.com/lambda/latest/dg/services-cloudformation.html)\
-      \ for details."
-  LambdaFunction00countNumberOfWebsiteVisitors00pXgkjCodeS3ObjectVersionMERgx:
-    NoEcho: "true"
-    Type: "String"
-    Description: "For versioned objects, the version of the deployment package object\
-      \ to use."
+#Parameters:
+  #LambdaFunction00countNumberOfWebsiteVisitors00pXgkjCodeS3BucketkdDlK:
+    #NoEcho: "true"
+    #Type: "String"
+    #Description: "An Amazon S3 bucket in the same AWS-Region as your function. The\
+      #\ bucket can be in a different AWS-account."
+  #LambdaFunction00countNumberOfWebsiteVisitors00pXgkjCodeImageUrit188N:
+    #NoEcho: "true"
+    #Type: "String"
+    #Description: "URI of a [container image](https://docs.aws.amazon.com/lambda/latest/dg/lambda-images.html)\
+      #\ in the Amazon ECR registry."
+  #LambdaFunction00countNumberOfWebsiteVisitors00pXgkjCodeSourceKMSKeyArn4C0qI:
+    #NoEcho: "true"
+    #Type: "String"
+    #Description: "The ARN of the KMSlong (KMS) customer managed key that's used to\
+      #\ encrypt your function's .zip deployment package. If you don't provide a customer\
+      #\ managed key, Lambda uses an [owned key](https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#aws-owned-cmk)."
+  #LambdaFunction00countNumberOfWebsiteVisitors00pXgkjCodeS3KeyqnJ4m:
+    #NoEcho: "true"
+    #Type: "String"
+    #Description: "The Amazon S3 key of the deployment package."
+  #LambdaFunction00countNumberOfWebsiteVisitors00pXgkjCodeZipFilev4439:
+    #NoEcho: "true"
+    #Type: "String"
+    #Description: "(Node.js and Python) The source code of your Lambda function. If\
+      #\ you include your function source inline with this parameter, CFN places it\
+      #\ in a file named ``index`` and zips it to create a [deployment package](https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-package.html).\
+      #\ This zip file cannot exceed 4MB. For the ``Handler`` property, the first part\
+      #\ of the handler identifier must be ``index``. For example, ``index.handler``.\n\
+      #\  When you specify source code inline for a Node.js function, the ``index``\
+      #\ file that CFN creates uses the extension ``.js``. This means that LAM treats\
+      #\ the file as a CommonJS module. ES modules aren't supported for inline functions.\n\
+      #\   For JSON, you must escape quotes and special characters such as newline\
+      #\ (``\\n``) with a backslash.\n If you specify a function that interacts with\
+      #\ an AWS CloudFormation custom resource, you don't have to write your own functions\
+      #\ to send responses to the custom resource that invoked the function. AWS CloudFormation\
+      #\ provides a response module ([cfn-response](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-lambda-function-code-cfnresponsemodule.html))\
+      #\ that simplifies sending responses. See [Using Lambda with CloudFormation](https://docs.aws.amazon.com/lambda/latest/dg/services-cloudformation.html)\
+      #\ for details."
+  #LambdaFunction00countNumberOfWebsiteVisitors00pXgkjCodeS3ObjectVersionMERgx:
+    #NoEcho: "true"
+    #Type: "String"
+    #Description: "For versioned objects, the version of the deployment package object\
+      #\ to use."
 
 Resources:
   FrontEndBucketPolicy:
@@ -116,6 +116,26 @@ Resources:
             #PartitionDateSource: EventTime
         #DestinationBucketName: logs.tristantech.org
         #LogFilePrefix: logs/
+
+  LambdaBucket:
+    UpdateReplacePolicy: Delete
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Delete
+    Properties:
+      PublicAccessBlockConfiguration:
+        RestrictPublicBuckets: false
+        IgnorePublicAcls: false
+        BlockPublicPolicy: false
+        BlockPublicAcls: false
+      BucketName: tristantech.org-iac-lambda
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - BucketKeyEnabled: true
+            ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
 
   CloudFrontCachePolicy:
     UpdateReplacePolicy: "Delete"
@@ -283,172 +303,169 @@ Resources:
     Type: AWS::Lambda::Function
     Properties:
       FunctionName: countNumberOfWebsiteVisits
-      Handler: index.handler
+      Handler: countNumberOfWebsiteVisits.handler
       Runtime: nodejs22.x
       Role: arn:aws:iam::123456789012:role/MyLambdaExecutionRole
-      Code:
-        ZipFile: |
-          def handler(event, context):
-              return {"statusCode": 200, "body": "Hello from Lambda!"}
-      Events:
-        HelloWorld:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-          Properties:
-            Path: /hello
-            Method: get
+      Code: ./lambda/
+      #Events:
+        #HelloWorld:
+          #Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          #Properties:
+            #Path: /hello
+            #Method: get
 
 
-  LambdaPermission00functioncountNumberOfWebsiteVisitors00iOBYK:
-    UpdateReplacePolicy: "Delete"
-    Type: "AWS::Lambda::Permission"
-    DeletionPolicy: "Delete"
-    Properties:
-      FunctionName:
-        Fn::GetAtt:
-        - "LambdaFunction00countNumberOfWebsiteVisitors00pXgkj"
-        - "Arn"
-      Action: "lambda:InvokeFunction"
-      SourceArn: "arn:aws:execute-api:eu-central-1:912311480070:y0218osvh0/*/POST/"
-      Principal: "apigateway.amazonaws.com"
-  LambdaPermission00functioncountNumberOfWebsiteVisitors00Zkgky:
-    UpdateReplacePolicy: "Delete"
-    Type: "AWS::Lambda::Permission"
-    DeletionPolicy: "Delete"
-    Properties:
-      FunctionName:
-        Fn::GetAtt:
-        - "LambdaFunction00countNumberOfWebsiteVisitors00pXgkj"
-        - "Arn"
-      Action: "lambda:InvokeFunction"
-      SourceArn: "arn:aws:execute-api:eu-central-1:912311480070:tkarxrzkl1/*/GET/visitor-count"
-      Principal: "apigateway.amazonaws.com"
+  #LambdaPermission00functioncountNumberOfWebsiteVisitors00iOBYK:
+    #UpdateReplacePolicy: "Delete"
+    #Type: "AWS::Lambda::Permission"
+    #DeletionPolicy: "Delete"
+    #Properties:
+      #FunctionName:
+        #Fn::GetAtt:
+        #- "LambdaFunction00countNumberOfWebsiteVisitors00pXgkj"
+        #- "Arn"
+      #Action: "lambda:InvokeFunction"
+      #SourceArn: "arn:aws:execute-api:eu-central-1:912311480070:y0218osvh0/*/POST/"
+      #Principal: "apigateway.amazonaws.com"
+  #LambdaPermission00functioncountNumberOfWebsiteVisitors00Zkgky:
+    #UpdateReplacePolicy: "Delete"
+    #Type: "AWS::Lambda::Permission"
+    #DeletionPolicy: "Delete"
+    #Properties:
+      #FunctionName:
+        #Fn::GetAtt:
+        #- "LambdaFunction00countNumberOfWebsiteVisitors00pXgkj"
+        #- "Arn"
+      #Action: "lambda:InvokeFunction"
+      #SourceArn: "arn:aws:execute-api:eu-central-1:912311480070:tkarxrzkl1/*/GET/visitor-count"
+      #Principal: "apigateway.amazonaws.com"
 
-  IAMRole00countNumberOfWebsiteVisitorsrolen9d4noft00U4FRv:
-    UpdateReplacePolicy: "Delete"
-    Type: "AWS::IAM::Role"
-    DeletionPolicy: "Delete"
-    Properties:
-      Path: "/service-role/"
-      ManagedPolicyArns:
-      - "arn:aws:iam::912311480070:policy/service-role/AWSLambdaBasicExecutionRole-9cbce26f-d618-453b-8571-18687de80142"
-      MaxSessionDuration: 3600
-      RoleName: "countNumberOfWebsiteVisitors-role-n9d4noft"
-      Policies:
-      - PolicyDocument:
-          Version: "2012-10-17"
-          Statement:
-          - Resource: "arn:aws:dynamodb:eu-central-1:912311480070:table/website-visits"
-            Action: "dynamodb:GetItem"
-            Effect: "Allow"
-            Sid: "AllowGetItemCommand"
-        PolicyName: "AllowGetItemCommand"
-      - PolicyDocument:
-          Version: "2012-10-17"
-          Statement:
-          - Resource: "arn:aws:dynamodb:eu-central-1:912311480070:table/website-visits"
-            Action: "dynamodb:UpdateItem"
-            Effect: "Allow"
-            Sid: "AllowUpdateItemCommand"
-        PolicyName: "AllowUpdateItemCommand"
-      AssumeRolePolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-        - Action: "sts:AssumeRole"
-          Effect: "Allow"
-          Principal:
-            Service: "lambda.amazonaws.com"
-  LambdaPermission00functioncountNumberOfWebsiteVisitors00A9ciX:
-    UpdateReplacePolicy: "Delete"
-    Type: "AWS::Lambda::Permission"
-    DeletionPolicy: "Delete"
-    Properties:
-      FunctionName:
-        Fn::GetAtt:
-        - "LambdaFunction00countNumberOfWebsiteVisitors00pXgkj"
-        - "Arn"
-      Action: "lambda:InvokeFunction"
-      SourceArn: "arn:aws:execute-api:eu-central-1:912311480070:y0218osvh0/*/GET/"
-      Principal: "apigateway.amazonaws.com"
+  #IAMRole00countNumberOfWebsiteVisitorsrolen9d4noft00U4FRv:
+    #UpdateReplacePolicy: "Delete"
+    #Type: "AWS::IAM::Role"
+    #DeletionPolicy: "Delete"
+    #Properties:
+      #Path: "/service-role/"
+      #ManagedPolicyArns:
+      #- "arn:aws:iam::912311480070:policy/service-role/AWSLambdaBasicExecutionRole-9cbce26f-d618-453b-8571-18687de80142"
+      #MaxSessionDuration: 3600
+      #RoleName: "countNumberOfWebsiteVisitors-role-n9d4noft"
+      #Policies:
+      #- PolicyDocument:
+          #Version: "2012-10-17"
+          #Statement:
+          #- Resource: "arn:aws:dynamodb:eu-central-1:912311480070:table/website-visits"
+            #Action: "dynamodb:GetItem"
+            #Effect: "Allow"
+            #Sid: "AllowGetItemCommand"
+        #PolicyName: "AllowGetItemCommand"
+      #- PolicyDocument:
+          #Version: "2012-10-17"
+          #Statement:
+          #- Resource: "arn:aws:dynamodb:eu-central-1:912311480070:table/website-visits"
+            #Action: "dynamodb:UpdateItem"
+            #Effect: "Allow"
+            #Sid: "AllowUpdateItemCommand"
+        #PolicyName: "AllowUpdateItemCommand"
+      #AssumeRolePolicyDocument:
+        #Version: "2012-10-17"
+        #Statement:
+        #- Action: "sts:AssumeRole"
+          #Effect: "Allow"
+          #Principal:
+            #Service: "lambda.amazonaws.com"
+  #LambdaPermission00functioncountNumberOfWebsiteVisitors00A9ciX:
+    #UpdateReplacePolicy: "Delete"
+    #Type: "AWS::Lambda::Permission"
+    #DeletionPolicy: "Delete"
+    #Properties:
+      #FunctionName:
+        #Fn::GetAtt:
+        #- "LambdaFunction00countNumberOfWebsiteVisitors00pXgkj"
+        #- "Arn"
+      #Action: "lambda:InvokeFunction"
+      #SourceArn: "arn:aws:execute-api:eu-central-1:912311480070:y0218osvh0/*/GET/"
+      #Principal: "apigateway.amazonaws.com"
 
-  IAMManagedPolicy00policyserviceroleAWSLambdaBasicExecutionRole9cbce26fd618453b857118687de80142008RnPu:
-    UpdateReplacePolicy: "Delete"
-    Type: "AWS::IAM::ManagedPolicy"
-    DeletionPolicy: "Delete"
-    Properties:
-      ManagedPolicyName: "AWSLambdaBasicExecutionRole-9cbce26f-d618-453b-8571-18687de80142"
-      Path: "/service-role/"
-      Description: ""
-      Groups: []
-      PolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-        - Resource: "arn:aws:logs:eu-central-1:912311480070:*"
-          Action: "logs:CreateLogGroup"
-          Effect: "Allow"
-        - Resource:
-          - "arn:aws:logs:eu-central-1:912311480070:log-group:/aws/lambda/countNumberOfWebsiteVisitors:*"
-          Action:
-          - "logs:CreateLogStream"
-          - "logs:PutLogEvents"
-          Effect: "Allow"
-      Roles:
-      - Ref: "IAMRole00countNumberOfWebsiteVisitorsrolen9d4noft00U4FRv"
-      Users: []
+  #IAMManagedPolicy00policyserviceroleAWSLambdaBasicExecutionRole9cbce26fd618453b857118687de80142008RnPu:
+    #UpdateReplacePolicy: "Delete"
+    #Type: "AWS::IAM::ManagedPolicy"
+    #DeletionPolicy: "Delete"
+    #Properties:
+      #ManagedPolicyName: "AWSLambdaBasicExecutionRole-9cbce26f-d618-453b-8571-18687de80142"
+      #Path: "/service-role/"
+      #Description: ""
+      #Groups: []
+      #PolicyDocument:
+        #Version: "2012-10-17"
+        #Statement:
+        #- Resource: "arn:aws:logs:eu-central-1:912311480070:*"
+          #Action: "logs:CreateLogGroup"
+          #Effect: "Allow"
+        #- Resource:
+          #- "arn:aws:logs:eu-central-1:912311480070:log-group:/aws/lambda/countNumberOfWebsiteVisitors:*"
+          #Action:
+          #- "logs:CreateLogStream"
+          #- "logs:PutLogEvents"
+          #Effect: "Allow"
+      #Roles:
+      #- Ref: "IAMRole00countNumberOfWebsiteVisitorsrolen9d4noft00U4FRv"
+      #Users: []
 
-  LambdaFunction00countNumberOfWebsiteVisitors00pXgkj:
-    UpdateReplacePolicy: "Delete"
-    Type: "AWS::Lambda::Function"
-    DeletionPolicy: "Delete"
-    Properties:
-      MemorySize: 128
-      Description: ""
-      TracingConfig:
-        Mode: "PassThrough"
-      Timeout: 3
-      RuntimeManagementConfig:
-        UpdateRuntimeOn: "Auto"
-      Handler: "index.handler"
-      Code:
-        SourceKMSKeyArn:
-          Ref: "LambdaFunction00countNumberOfWebsiteVisitors00pXgkjCodeSourceKMSKeyArn4C0qI"
-        S3ObjectVersion:
-          Ref: "LambdaFunction00countNumberOfWebsiteVisitors00pXgkjCodeS3ObjectVersionMERgx"
-        S3Bucket:
-          Ref: "LambdaFunction00countNumberOfWebsiteVisitors00pXgkjCodeS3BucketkdDlK"
-        ZipFile:
-          Ref: "LambdaFunction00countNumberOfWebsiteVisitors00pXgkjCodeZipFilev4439"
-        ImageUri:
-          Ref: "LambdaFunction00countNumberOfWebsiteVisitors00pXgkjCodeImageUrit188N"
-        S3Key:
-          Ref: "LambdaFunction00countNumberOfWebsiteVisitors00pXgkjCodeS3KeyqnJ4m"
-      Role:
-        Fn::GetAtt:
-        - "IAMRole00countNumberOfWebsiteVisitorsrolen9d4noft00U4FRv"
-        - "Arn"
-      FileSystemConfigs: []
-      FunctionName: "countNumberOfWebsiteVisitors"
-      Runtime: "nodejs22.x"
-      PackageType: "Zip"
-      LoggingConfig:
-        LogFormat: "Text"
-        LogGroup: "/aws/lambda/countNumberOfWebsiteVisitors"
-      RecursiveLoop: "Terminate"
-      EphemeralStorage:
-        Size: 512
-      Architectures:
-      - "x86_64"
-  LambdaPermission00functioncountNumberOfWebsiteVisitors00xu0JA:
-    UpdateReplacePolicy: "Delete"
-    Type: "AWS::Lambda::Permission"
-    DeletionPolicy: "Delete"
-    Properties:
-      FunctionName:
-        Fn::GetAtt:
-        - "LambdaFunction00countNumberOfWebsiteVisitors00pXgkj"
-        - "Arn"
-      Action: "lambda:InvokeFunction"
-      SourceArn: "arn:aws:execute-api:eu-central-1:912311480070:tkarxrzkl1/*/POST/visitor-count"
-      Principal: "apigateway.amazonaws.com"      
+  #LambdaFunction00countNumberOfWebsiteVisitors00pXgkj:
+    #UpdateReplacePolicy: "Delete"
+    #Type: "AWS::Lambda::Function"
+    #DeletionPolicy: "Delete"
+    #Properties:
+      #MemorySize: 128
+      #Description: ""
+      #TracingConfig:
+        #Mode: "PassThrough"
+      #Timeout: 3
+      #RuntimeManagementConfig:
+        #UpdateRuntimeOn: "Auto"
+      #Handler: "index.handler"
+      #Code:
+        #SourceKMSKeyArn:
+          #Ref: "LambdaFunction00countNumberOfWebsiteVisitors00pXgkjCodeSourceKMSKeyArn4C0qI"
+        #S3ObjectVersion:
+          #Ref: "LambdaFunction00countNumberOfWebsiteVisitors00pXgkjCodeS3ObjectVersionMERgx"
+        #S3Bucket:
+          #Ref: "LambdaFunction00countNumberOfWebsiteVisitors00pXgkjCodeS3BucketkdDlK"
+        #ZipFile:
+          #Ref: "LambdaFunction00countNumberOfWebsiteVisitors00pXgkjCodeZipFilev4439"
+        #ImageUri:
+          #Ref: "LambdaFunction00countNumberOfWebsiteVisitors00pXgkjCodeImageUrit188N"
+        #S3Key:
+          #Ref: "LambdaFunction00countNumberOfWebsiteVisitors00pXgkjCodeS3KeyqnJ4m"
+      #Role:
+        #Fn::GetAtt:
+        #- "IAMRole00countNumberOfWebsiteVisitorsrolen9d4noft00U4FRv"
+        #- "Arn"
+      #FileSystemConfigs: []
+      #FunctionName: "countNumberOfWebsiteVisitors"
+      #Runtime: "nodejs22.x"
+      #PackageType: "Zip"
+      #LoggingConfig:
+        #LogFormat: "Text"
+        #LogGroup: "/aws/lambda/countNumberOfWebsiteVisitors"
+      #RecursiveLoop: "Terminate"
+      #EphemeralStorage:
+        #Size: 512
+      #Architectures:
+      #- "x86_64"
+  #LambdaPermission00functioncountNumberOfWebsiteVisitors00xu0JA:
+    #UpdateReplacePolicy: "Delete"
+    #Type: "AWS::Lambda::Permission"
+    #DeletionPolicy: "Delete"
+    #Properties:
+      #FunctionName:
+        #Fn::GetAtt:
+        #- "LambdaFunction00countNumberOfWebsiteVisitors00pXgkj"
+        #- "Arn"
+      #Action: "lambda:InvokeFunction"
+      #SourceArn: "arn:aws:execute-api:eu-central-1:912311480070:tkarxrzkl1/*/POST/visitor-count"
+      #Principal: "apigateway.amazonaws.com"      
 
 #Resources:
   #FrontEndBucket:
