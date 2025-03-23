@@ -305,7 +305,7 @@ Resources:
       FunctionName: countNumberOfWebsiteVisits
       Handler: countNumberOfWebsiteVisits.handler
       Runtime: nodejs22.x
-      Role: arn:aws:iam::123456789012:role/MyLambdaExecutionRole
+      Role: !GetAtt LambdaRole.Arn
       Code: ./lambda/
       #Events:
         #HelloWorld:
@@ -313,7 +313,6 @@ Resources:
           #Properties:
             #Path: /hello
             #Method: get
-
 
   #LambdaPermission00functioncountNumberOfWebsiteVisitors00iOBYK:
     #UpdateReplacePolicy: "Delete"
@@ -340,40 +339,40 @@ Resources:
       #SourceArn: "arn:aws:execute-api:eu-central-1:912311480070:tkarxrzkl1/*/GET/visitor-count"
       #Principal: "apigateway.amazonaws.com"
 
-  #IAMRole00countNumberOfWebsiteVisitorsrolen9d4noft00U4FRv:
-    #UpdateReplacePolicy: "Delete"
-    #Type: "AWS::IAM::Role"
-    #DeletionPolicy: "Delete"
-    #Properties:
-      #Path: "/service-role/"
+  LambdaRole:
+    UpdateReplacePolicy: "Delete"
+    Type: "AWS::IAM::Role"
+    DeletionPolicy: "Delete"
+    Properties:
+      Path: "/service-role/"
       #ManagedPolicyArns:
       #- "arn:aws:iam::912311480070:policy/service-role/AWSLambdaBasicExecutionRole-9cbce26f-d618-453b-8571-18687de80142"
-      #MaxSessionDuration: 3600
-      #RoleName: "countNumberOfWebsiteVisitors-role-n9d4noft"
-      #Policies:
-      #- PolicyDocument:
-          #Version: "2012-10-17"
-          #Statement:
-          #- Resource: "arn:aws:dynamodb:eu-central-1:912311480070:table/website-visits"
-            #Action: "dynamodb:GetItem"
-            #Effect: "Allow"
-            #Sid: "AllowGetItemCommand"
-        #PolicyName: "AllowGetItemCommand"
-      #- PolicyDocument:
-          #Version: "2012-10-17"
-          #Statement:
-          #- Resource: "arn:aws:dynamodb:eu-central-1:912311480070:table/website-visits"
-            #Action: "dynamodb:UpdateItem"
-            #Effect: "Allow"
-            #Sid: "AllowUpdateItemCommand"
-        #PolicyName: "AllowUpdateItemCommand"
-      #AssumeRolePolicyDocument:
-        #Version: "2012-10-17"
-        #Statement:
-        #- Action: "sts:AssumeRole"
-          #Effect: "Allow"
-          #Principal:
-            #Service: "lambda.amazonaws.com"
+      MaxSessionDuration: 3600
+      RoleName: "countNumberOfWebsiteVisits-role"
+      Policies:
+      - PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+          - Resource: "arn:aws:dynamodb:eu-central-1:912311480070:table/website-visits-iac"
+            Action: "dynamodb:GetItem"
+            Effect: "Allow"
+            Sid: "AllowGetItemCommand"
+        PolicyName: "AllowGetItemCommand"
+      - PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+          - Resource: "arn:aws:dynamodb:eu-central-1:912311480070:table/website-visits-iac"
+            Action: "dynamodb:UpdateItem"
+            Effect: "Allow"
+            Sid: "AllowUpdateItemCommand"
+        PolicyName: "AllowUpdateItemCommand"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+        - Action: "sts:AssumeRole"
+          Effect: "Allow"
+          Principal:
+            Service: "lambda.amazonaws.com"
   #LambdaPermission00functioncountNumberOfWebsiteVisitors00A9ciX:
     #UpdateReplacePolicy: "Delete"
     #Type: "AWS::Lambda::Permission"
@@ -387,30 +386,30 @@ Resources:
       #SourceArn: "arn:aws:execute-api:eu-central-1:912311480070:y0218osvh0/*/GET/"
       #Principal: "apigateway.amazonaws.com"
 
-  #IAMManagedPolicy00policyserviceroleAWSLambdaBasicExecutionRole9cbce26fd618453b857118687de80142008RnPu:
-    #UpdateReplacePolicy: "Delete"
-    #Type: "AWS::IAM::ManagedPolicy"
-    #DeletionPolicy: "Delete"
-    #Properties:
-      #ManagedPolicyName: "AWSLambdaBasicExecutionRole-9cbce26f-d618-453b-8571-18687de80142"
-      #Path: "/service-role/"
-      #Description: ""
-      #Groups: []
-      #PolicyDocument:
-        #Version: "2012-10-17"
-        #Statement:
-        #- Resource: "arn:aws:logs:eu-central-1:912311480070:*"
-          #Action: "logs:CreateLogGroup"
-          #Effect: "Allow"
-        #- Resource:
-          #- "arn:aws:logs:eu-central-1:912311480070:log-group:/aws/lambda/countNumberOfWebsiteVisitors:*"
-          #Action:
-          #- "logs:CreateLogStream"
-          #- "logs:PutLogEvents"
-          #Effect: "Allow"
-      #Roles:
-      #- Ref: "IAMRole00countNumberOfWebsiteVisitorsrolen9d4noft00U4FRv"
-      #Users: []
+  IAMManagedPolicy:
+    UpdateReplacePolicy: "Delete"
+    Type: "AWS::IAM::ManagedPolicy"
+    DeletionPolicy: "Delete"
+    Properties:
+      ManagedPolicyName: "AWSLambdaBasicExecutionRole-IAMManagedPolicy"
+      Path: "/service-role/"
+      Description: ""
+      Groups: []
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+        - Resource: "arn:aws:logs:eu-central-1:912311480070:*"
+          Action: "logs:CreateLogGroup"
+          Effect: "Allow"
+        - Resource:
+          - "arn:aws:logs:eu-central-1:912311480070:log-group:/aws/lambda/countNumberOfWebsiteVisits:*"
+          Action:
+          - "logs:CreateLogStream"
+          - "logs:PutLogEvents"
+          Effect: "Allow"
+      Roles:
+      - Ref: LambdaRole
+      Users: []
 
   #LambdaFunction00countNumberOfWebsiteVisitors00pXgkj:
     #UpdateReplacePolicy: "Delete"
