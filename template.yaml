@@ -484,13 +484,15 @@ Resources:
         - "REGIONAL"
       DisableExecuteApiEndpoint: false
       Name: "VisitCounterAPI"
-  #ApiGatewayDeployment:
-    #UpdateReplacePolicy: "Delete"
-    #Type: "AWS::ApiGateway::Deployment"
-    #DeletionPolicy: "Delete"
-    #Properties:
-      #RestApiId:
-        #Ref: "ApiGatewayRestApi"
+  ApiGatewayDeployment:
+    UpdateReplacePolicy: "Delete"
+    Type: "AWS::ApiGateway::Deployment"
+    DeletionPolicy: "Delete"
+    Properties:
+      RestApiId:
+        Ref: "ApiGatewayRestApi"
+      #StageName:
+        #Ref: "ApiGatewayStage"
   ApiGatewayStage:
     UpdateReplacePolicy: "Delete"
     Type: "AWS::ApiGateway::Stage"
@@ -506,7 +508,34 @@ Resources:
       CacheClusterSize: "0.5"
       TracingEnabled: false
       CacheClusterEnabled: false
-  #ApiGatewayDeploymentWG:
+  #########################################################################################
+  ApiGatewayMethod:    
+    Type: AWS::ApiGateway::Method
+    Properties:
+      HttpMethod: "GET"
+      Integration: 
+        IntegrationHttpMethod: POST
+        Type: Lambda
+        #Uri: !Sub
+          #- arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/${lambdaArn}/invocations
+          #- lambdaArn: !GetAtt MyLambdaFunction.Arn
+      ResourceId: !GetAtt ApiGatewayRestApi.RootResourceId
+      RestApiId: !Ref ApiGatewayRestApi
+      #ethodResponses: 
+       #- MethodResponse:
+            #ResponseModels: 
+              #Key: Value
+            #ResponseParameters: 
+              #Key: Value
+           #StatusCode: "200"
+     #OperationName: String
+     #RequestModels: 
+       #Key: Value
+     #RequestParameters: 
+       #Key: Value
+     #RequestValidatorId: String
+
+      #ApiGatewayDeploymentWG:
     #UpdateReplacePolicy: "Delete"
     #Type: "AWS::ApiGateway::Deployment"
     #DeletionPolicy: "Delete"
