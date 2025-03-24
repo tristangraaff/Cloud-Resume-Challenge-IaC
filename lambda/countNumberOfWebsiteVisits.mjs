@@ -6,11 +6,11 @@ export const handler = async (event) => {
 
   if (event['http-method'] === 'POST') {
     const params = {
-      TableName: 'website-visits',
+      TableName: 'website-visits-iac',
       Key: {
         'count_id': { 'S': 'total' }
       },
-      UpdateExpression: 'ADD visitor_count :increment',
+      UpdateExpression: 'ADD visit_count :increment',
       ExpressionAttributeValues: {
         ':increment': { 'N': '1'},
       },
@@ -21,38 +21,38 @@ export const handler = async (event) => {
       await client.send(new UpdateItemCommand(params));
       return {
         statusCode: 200,
-        body: JSON.stringify({ message: 'Visitor count updated successfully' })
+        body: JSON.stringify({ message: 'Visit count updated successfully' })
       };
     } catch (error) {
-      console.error('Error updating visitor count:', error);
+      console.error('Error updating visit count:', error);
       return {
         statusCode: 500,
-        body: JSON.stringify({ message: 'Error updating visitor count' })
+        body: JSON.stringify({ message: 'Error updating visit count' })
       }
     }
   }
 
   if (event['http-method'] === 'GET') {
     const params = {
-      TableName: 'website-visits',
+      TableName: 'website-visits-iac',
       Key: {
         'count_id': { 'S': 'total' }
       },
-      ProjectionExpression: 'visitor_count'
+      ProjectionExpression: 'visit_count'
     };
 
     try {
       const response = await client.send(new GetItemCommand(params));
-      const visitorCount = response.Item.visitor_count.N;
+      const visitCount = response.Item.visit_count.N;
       return {
         statusCode: 200,
-        body: JSON.stringify({ visitorCount })
+        body: JSON.stringify({ visitCount })
       };
     } catch (error) {
-      console.error('Error retrieving visitor count:', error);
+      console.error('Error retrieving visit count:', error);
       return {
         statusCode: 500,
-        body: JSON.stringify({ message: 'Error retrieving visitor count' })
+        body: JSON.stringify({ message: 'Error retrieving visit count' })
       };
     }
   }

@@ -464,7 +464,62 @@ Resources:
         #- "Arn"
       #Action: "lambda:InvokeFunction"
       #SourceArn: "arn:aws:execute-api:eu-central-1:912311480070:tkarxrzkl1/*/POST/visitor-count"
-      #Principal: "apigateway.amazonaws.com"      
+      #Principal: "apigateway.amazonaws.com"
+
+  #ApiGatewayDeploymentSg:
+    #UpdateReplacePolicy: "Delete"
+    #Type: "AWS::ApiGateway::Deployment"
+    #DeletionPolicy: "Delete"
+    #Properties:
+      #RestApiId:
+        #Ref: "ApiGatewayRestApi"
+  ApiGatewayRestApi:
+    UpdateReplacePolicy: "Delete"
+    Type: "AWS::ApiGateway::RestApi"
+    DeletionPolicy: "Delete"
+    Properties:
+      ApiKeySourceType: "HEADER"
+      EndpointConfiguration:
+        Types:
+        - "REGIONAL"
+      DisableExecuteApiEndpoint: false
+      Name: "VisitCounterAPI"
+  #ApiGatewayDeployment:
+    #UpdateReplacePolicy: "Delete"
+    #Type: "AWS::ApiGateway::Deployment"
+    #DeletionPolicy: "Delete"
+    #Properties:
+      #RestApiId:
+        #Ref: "ApiGatewayRestApi"
+  ApiGatewayStage:
+    UpdateReplacePolicy: "Delete"
+    Type: "AWS::ApiGateway::Stage"
+    DeletionPolicy: "Delete"
+    Properties:
+      RestApiId:
+        Ref: "ApiGatewayRestApi"
+      DeploymentId:
+        Fn::GetAtt:
+        - "ApiGatewayDeployment"
+        - "DeploymentId"
+      StageName: "prod"
+      CacheClusterSize: "0.5"
+      TracingEnabled: false
+      CacheClusterEnabled: false
+  #ApiGatewayDeploymentWG:
+    #UpdateReplacePolicy: "Delete"
+    #Type: "AWS::ApiGateway::Deployment"
+    #DeletionPolicy: "Delete"
+    #Properties:
+      #RestApiId:
+        #Ref: "ApiGatewayRestApi"
+  #ApiGatewayDeploymentHs:
+    #UpdateReplacePolicy: "Delete"
+    #Type: "AWS::ApiGateway::Deployment"
+    #DeletionPolicy: "Delete"
+    #Properties:
+      #RestApiId:
+        #Ref: "ApiGatewayRestApi"      
 
 #Resources:
   #FrontEndBucket:
