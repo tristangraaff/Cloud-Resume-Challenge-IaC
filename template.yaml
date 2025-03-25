@@ -484,10 +484,20 @@ Resources:
         - "REGIONAL"
       DisableExecuteApiEndpoint: false
       Name: "VisitCounterAPI"
+
+  ApiGatewayResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !GetAtt ApiGatewayRestApi.RootResourceId
+      PathPart: visitors
+      RestApiId: !Ref ApiGatewayRestApi
+
   ApiGatewayDeployment:
     UpdateReplacePolicy: "Delete"
     Type: "AWS::ApiGateway::Deployment"
     DeletionPolicy: "Delete"
+    DependsOn:
+     - ApiGatewayMethod
     Properties:
       RestApiId:
         Ref: "ApiGatewayRestApi"
@@ -500,10 +510,8 @@ Resources:
     Properties:
       RestApiId:
         Ref: "ApiGatewayRestApi"
-      DeploymentId:
-        Fn::GetAtt:
-        - "ApiGatewayDeployment"
-        - "DeploymentId"
+      DeploymentId: 
+       Ref: "ApiGatewayDeployment"
       StageName: "prod"
       CacheClusterSize: "0.5"
       TracingEnabled: false
@@ -515,12 +523,26 @@ Resources:
       HttpMethod: "GET"
       Integration: 
         IntegrationHttpMethod: POST
-        Type: Lambda
-        #Uri: !Sub
-          #- arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/${lambdaArn}/invocations
-          #- lambdaArn: !GetAtt MyLambdaFunction.Arn
-      ResourceId: !GetAtt ApiGatewayRestApi.RootResourceId
+        Type: AWS
+        Uri: !Sub
+          - arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/${lambdaArn}/invocations
+          - lambdaArn: !GetAtt MyLambdaFunction.Arn
+        RequestTemplates:
+          application/json: |
+            {
+                "http-method": "$context.httpMethod"
+            }
+        IntegrationResponses:
+          - StatusCode: 200
+            ResponseTemplates: 
+              application/json: |
+               {
+                  
+               }
+      ResourceId: !GetAtt ApiGatewayResource.ResourceId
       RestApiId: !Ref ApiGatewayRestApi
+      AuthorizationType: "NONE"
+
       #ethodResponses: 
        #- MethodResponse:
             #ResponseModels: 
