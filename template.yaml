@@ -521,6 +521,10 @@ Resources:
     Type: AWS::ApiGateway::Method
     Properties:
       HttpMethod: "GET"
+      MethodResponses:
+       - StatusCode: 200
+         ResponseParameters: { "method.response.header.Access-Control-Allow-Origin": "true" }
+         ResponseModels: { "application/json": "Empty" }
       Integration: 
         IntegrationHttpMethod: POST
         Type: AWS
@@ -534,6 +538,8 @@ Resources:
             }
         IntegrationResponses:
           - StatusCode: 200
+            ResponseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'https://tristantech.org'"
             ResponseTemplates: 
               application/json: |
                {
@@ -542,6 +548,7 @@ Resources:
       ResourceId: !GetAtt ApiGatewayResource.ResourceId
       RestApiId: !Ref ApiGatewayRestApi
       AuthorizationType: "NONE"
+
 
       #ethodResponses: 
        #- MethodResponse:
