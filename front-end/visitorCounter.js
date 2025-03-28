@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', async (event) => {
     async function incrementVisitorCount() {
         try {
-            const response = await fetch('https://y0218osvh0.execute-api.eu-central-1.amazonaws.com/prod/', 
+            const response = await fetch('https://a3sfkwdhr3.execute-api.eu-central-1.amazonaws.com/prod', 
                 { method: 'POST' });
             if (!response.ok) throw new Error('Network response was not ok');
             console.log('Visitor count incremented');
@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', async (event) => {
 
     async function getVisitorCount() {
         try {
-            const response = await fetch('https://y0218osvh0.execute-api.eu-central-1.amazonaws.com/prod/',
+            const response = await fetch('https://a3sfkwdhr3.execute-api.eu-central-1.amazonaws.com/prod',
                 { method: 'GET' });
             if (!response.ok) throw new Error('Network response was not ok');
             const data = await response.json();

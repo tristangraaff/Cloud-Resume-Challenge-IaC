@@ -314,30 +314,30 @@ Resources:
             #Path: /hello
             #Method: get
 
-  #LambdaPermission00functioncountNumberOfWebsiteVisitors00iOBYK:
-    #UpdateReplacePolicy: "Delete"
-    #Type: "AWS::Lambda::Permission"
-    #DeletionPolicy: "Delete"
-    #Properties:
-      #FunctionName:
-        #Fn::GetAtt:
-        #- "LambdaFunction00countNumberOfWebsiteVisitors00pXgkj"
-        #- "Arn"
-      #Action: "lambda:InvokeFunction"
-      #SourceArn: "arn:aws:execute-api:eu-central-1:912311480070:y0218osvh0/*/POST/"
-      #Principal: "apigateway.amazonaws.com"
-  #LambdaPermission00functioncountNumberOfWebsiteVisitors00Zkgky:
-    #UpdateReplacePolicy: "Delete"
-    #Type: "AWS::Lambda::Permission"
-    #DeletionPolicy: "Delete"
-    #Properties:
-      #FunctionName:
-        #Fn::GetAtt:
-        #- "LambdaFunction00countNumberOfWebsiteVisitors00pXgkj"
-        #- "Arn"
-      #Action: "lambda:InvokeFunction"
-      #SourceArn: "arn:aws:execute-api:eu-central-1:912311480070:tkarxrzkl1/*/GET/visitor-count"
-      #Principal: "apigateway.amazonaws.com"
+  LambdaPOSTPermissionForAPIGateway:
+    UpdateReplacePolicy: "Delete"
+    Type: "AWS::Lambda::Permission"
+    DeletionPolicy: "Delete"
+    Properties:
+      FunctionName:
+        Fn::GetAtt:
+        - "MyLambdaFunction"
+        - "Arn"
+      Action: "lambda:InvokeFunction"
+      SourceArn: "arn:aws:execute-api:eu-central-1:912311480070:a3sfkwdhr3/*/POST/visitors"
+      Principal: "apigateway.amazonaws.com"
+  LambdaGETPermissionForAPIGateway:
+    UpdateReplacePolicy: "Delete"
+    Type: "AWS::Lambda::Permission"
+    DeletionPolicy: "Delete"
+    Properties:
+      FunctionName:
+        Fn::GetAtt:
+        - "MyLambdaFunction"
+        - "Arn"
+      Action: "lambda:InvokeFunction"
+      SourceArn: "arn:aws:execute-api:eu-central-1:912311480070:a3sfkwdhr3/*/GET/visitors"
+      Principal: "apigateway.amazonaws.com"
 
   LambdaRole:
     UpdateReplacePolicy: "Delete"
@@ -498,6 +498,7 @@ Resources:
     DeletionPolicy: "Delete"
     DependsOn:
      - ApiGatewayMethod
+     - ApiGatewayPostMethod
     Properties:
       RestApiId:
         Ref: "ApiGatewayRestApi"
@@ -540,11 +541,73 @@ Resources:
           - StatusCode: 200
             ResponseParameters:
               method.response.header.Access-Control-Allow-Origin: "'https://tristantech.org'"
-            ResponseTemplates: 
-              application/json: |
-               {
-                  
-               }
+            #ResponseTemplates: 
+              #application/json: |
+               #{
+               #   
+               #}
+      ResourceId: !GetAtt ApiGatewayResource.ResourceId
+      RestApiId: !Ref ApiGatewayRestApi
+      AuthorizationType: "NONE"
+  ApiGatewayPostMethod:    
+    Type: AWS::ApiGateway::Method
+    Properties:
+      HttpMethod: "POST"
+      MethodResponses:
+       - StatusCode: 200
+         ResponseParameters: { "method.response.header.Access-Control-Allow-Origin": "true" }
+         ResponseModels: { "application/json": "Empty" }
+      Integration: 
+        IntegrationHttpMethod: POST
+        Type: AWS
+        Uri: !Sub
+          - arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/${lambdaArn}/invocations
+          - lambdaArn: !GetAtt MyLambdaFunction.Arn
+        RequestTemplates:
+          application/json: |
+            {
+                "http-method": "$context.httpMethod"
+            }
+        IntegrationResponses:
+          - StatusCode: 200
+            ResponseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'https://tristantech.org'"
+            #ResponseTemplates: 
+              #application/json: |
+               #{
+               #   
+               #}
+      ResourceId: !GetAtt ApiGatewayResource.ResourceId
+      RestApiId: !Ref ApiGatewayRestApi
+      AuthorizationType: "NONE"
+  ApiGatewayOPTIONSMethod:    
+    Type: AWS::ApiGateway::Method
+    Properties:
+      HttpMethod: "OPTIONS"
+      MethodResponses:
+       - StatusCode: 200
+         ResponseParameters: 
+          "method.response.header.Access-Control-Allow-Origin": "true"
+          "method.response.header.Access-Control-Allow-Methods": "true"
+          "method.response.header.Access-Control-Allow-Headers": "true"
+         ResponseModels: { "application/json": "Empty" }
+      Integration: 
+        IntegrationHttpMethod: POST
+        Type: AWS
+        Uri: !Sub
+          - arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/${lambdaArn}/invocations
+          - lambdaArn: !GetAtt MyLambdaFunction.Arn
+        RequestTemplates:
+          application/json: |
+            {
+                "statusCode": "200"
+            }
+        IntegrationResponses:
+          - StatusCode: 200
+            ResponseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'https://tristantech.org'"
+              method.response.header.Access-Control-Allow-Methods: "'OPTIONS,POST'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'" 
       ResourceId: !GetAtt ApiGatewayResource.ResourceId
       RestApiId: !Ref ApiGatewayRestApi
       AuthorizationType: "NONE"
