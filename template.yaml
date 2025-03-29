@@ -3,103 +3,60 @@ Transform: AWS::Serverless-2016-10-31
 Description: >
   cloud-resume-challenge-iac
 
-  Sample SAM Template for cloud-resume-challenge-iac
+  SAM Template for cloud-resume-challenge-iac
 
-# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
     Timeout: 3
-
     Tracing: Active
-    # You can add LoggingConfig parameters such as the Logformat, Log Group, and SystemLogLevel or ApplicationLogLevel. Learn more here https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html#sam-function-loggingconfig.
     LoggingConfig:
       LogFormat: JSON
   Api:
     TracingEnabled: true
 
-#Parameters:
-  #LambdaFunction00countNumberOfWebsiteVisitors00pXgkjCodeS3BucketkdDlK:
-    #NoEcho: "true"
-    #Type: "String"
-    #Description: "An Amazon S3 bucket in the same AWS-Region as your function. The\
-      #\ bucket can be in a different AWS-account."
-  #LambdaFunction00countNumberOfWebsiteVisitors00pXgkjCodeImageUrit188N:
-    #NoEcho: "true"
-    #Type: "String"
-    #Description: "URI of a [container image](https://docs.aws.amazon.com/lambda/latest/dg/lambda-images.html)\
-      #\ in the Amazon ECR registry."
-  #LambdaFunction00countNumberOfWebsiteVisitors00pXgkjCodeSourceKMSKeyArn4C0qI:
-    #NoEcho: "true"
-    #Type: "String"
-    #Description: "The ARN of the KMSlong (KMS) customer managed key that's used to\
-      #\ encrypt your function's .zip deployment package. If you don't provide a customer\
-      #\ managed key, Lambda uses an [owned key](https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#aws-owned-cmk)."
-  #LambdaFunction00countNumberOfWebsiteVisitors00pXgkjCodeS3KeyqnJ4m:
-    #NoEcho: "true"
-    #Type: "String"
-    #Description: "The Amazon S3 key of the deployment package."
-  #LambdaFunction00countNumberOfWebsiteVisitors00pXgkjCodeZipFilev4439:
-    #NoEcho: "true"
-    #Type: "String"
-    #Description: "(Node.js and Python) The source code of your Lambda function. If\
-      #\ you include your function source inline with this parameter, CFN places it\
-      #\ in a file named ``index`` and zips it to create a [deployment package](https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-package.html).\
-      #\ This zip file cannot exceed 4MB. For the ``Handler`` property, the first part\
-      #\ of the handler identifier must be ``index``. For example, ``index.handler``.\n\
-      #\  When you specify source code inline for a Node.js function, the ``index``\
-      #\ file that CFN creates uses the extension ``.js``. This means that LAM treats\
-      #\ the file as a CommonJS module. ES modules aren't supported for inline functions.\n\
-      #\   For JSON, you must escape quotes and special characters such as newline\
-      #\ (``\\n``) with a backslash.\n If you specify a function that interacts with\
-      #\ an AWS CloudFormation custom resource, you don't have to write your own functions\
-      #\ to send responses to the custom resource that invoked the function. AWS CloudFormation\
-      #\ provides a response module ([cfn-response](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-lambda-function-code-cfnresponsemodule.html))\
-      #\ that simplifies sending responses. See [Using Lambda with CloudFormation](https://docs.aws.amazon.com/lambda/latest/dg/services-cloudformation.html)\
-      #\ for details."
-  #LambdaFunction00countNumberOfWebsiteVisitors00pXgkjCodeS3ObjectVersionMERgx:
-    #NoEcho: "true"
-    #Type: "String"
-    #Description: "For versioned objects, the version of the deployment package object\
-      #\ to use."
+Parameters:
+  UpdateReplacePolicySetting:
+    Type: String
+    Default: Delete
+
+  DeletionPolicySetting:
+    Type: String
+    Default: Delete
+
+  FrontEndBucketName:
+    Type: String
+    Default: tristantech.org-iac
+    Description: Name of the S3 bucket where the front-end content of the application is stored
+  
+  LambdaBucketName:
+    Type: String
+    Default: tristantech.org-iac-lambda
+    Description: Name of the S3 bucket where the Lambda content of the application is stored
+  
+  DomainAlias1:
+    Type: String
+    Default: tristantech.org
+
+  DomainAlias2:
+    Type: String
+    Default: www.tristantech.org
+
+  DynamoDBTableName:
+    Type: String
+    Default: website-visits-iac
 
 Resources:
-  FrontEndBucketPolicy:
-    UpdateReplacePolicy: Delete
-    Type: AWS::S3::BucketPolicy
-    DeletionPolicy: Delete
-    Properties:
-      Bucket: !Ref FrontEndBucket
-      PolicyDocument:
-        Version: '2008-10-17'
-        Statement:
-          - Condition:
-              StringEquals:
-                AWS:SourceArn: 
-                  Fn::Join:
-                   - ''
-                   - - 'arn:aws:cloudfront::'
-                     - !Ref 'AWS::AccountId'
-                     - ':distribution/'
-                     - !Ref CloudFrontDistribution
-            Resource: arn:aws:s3:::tristantech.org-iac/*
-            Action: s3:GetObject
-            Effect: Allow
-            Principal:
-              Service: cloudfront.amazonaws.com
-            Sid: AllowCloudFrontServicePrincipal
-        Id: PolicyForCloudFrontPrivateContent
-
   FrontEndBucket:
-    UpdateReplacePolicy: Delete
+    UpdateReplacePolicy: !Ref UpdateReplacePolicySetting
     Type: AWS::S3::Bucket
-    DeletionPolicy: Delete
+    DeletionPolicy: !Ref DeletionPolicySetting
     Properties:
       PublicAccessBlockConfiguration:
-        RestrictPublicBuckets: false
-        IgnorePublicAcls: false
-        BlockPublicPolicy: false
-        BlockPublicAcls: false
-      BucketName: tristantech.org-iac
+        RestrictPublicBuckets: true
+        IgnorePublicAcls: true
+        BlockPublicPolicy: true
+        BlockPublicAcls: true
+      BucketName: !Ref FrontEndBucketName
       OwnershipControls:
         Rules:
           - ObjectOwnership: BucketOwnerEnforced
@@ -117,17 +74,43 @@ Resources:
         #DestinationBucketName: logs.tristantech.org
         #LogFilePrefix: logs/
 
+  FrontEndBucketPolicy:
+    UpdateReplacePolicy: !Ref UpdateReplacePolicySetting
+    Type: AWS::S3::BucketPolicy
+    DeletionPolicy: !Ref DeletionPolicySetting
+    Properties:
+      Bucket: !Ref FrontEndBucketName
+      PolicyDocument:
+        Version: '2008-10-17'
+        Statement:
+          - Condition:
+              StringEquals:
+                AWS:SourceArn: 
+                  Fn::Join:
+                   - ''
+                   - - 'arn:aws:cloudfront::'
+                     - !Ref 'AWS::AccountId'
+                     - ':distribution/'
+                     - !Ref CloudFrontDistribution
+            Resource: !Sub 'arn:aws:s3:::${FrontEndBucketName}/*'
+            Action: s3:GetObject
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Sid: AllowCloudFrontServicePrincipal
+        Id: PolicyForCloudFrontPrivateContent
+
   LambdaBucket:
-    UpdateReplacePolicy: Delete
+    UpdateReplacePolicy: !Ref UpdateReplacePolicySetting
     Type: AWS::S3::Bucket
-    DeletionPolicy: Delete
+    DeletionPolicy: !Ref DeletionPolicySetting
     Properties:
       PublicAccessBlockConfiguration:
-        RestrictPublicBuckets: false
-        IgnorePublicAcls: false
-        BlockPublicPolicy: false
-        BlockPublicAcls: false
-      BucketName: tristantech.org-iac-lambda
+        RestrictPublicBuckets: true
+        IgnorePublicAcls: true
+        BlockPublicPolicy: true
+        BlockPublicAcls: true
+      BucketName: !Ref LambdaBucketName
       OwnershipControls:
         Rules:
           - ObjectOwnership: BucketOwnerEnforced
@@ -138,9 +121,9 @@ Resources:
               SSEAlgorithm: AES256
 
   CloudFrontCachePolicy:
-    UpdateReplacePolicy: "Delete"
-    Type: "AWS::CloudFront::CachePolicy"
-    DeletionPolicy: "Delete"
+    UpdateReplacePolicy: !Ref UpdateReplacePolicySetting
+    Type: AWS::CloudFront::CachePolicy
+    DeletionPolicy: !Ref DeletionPolicySetting
     Properties:
       CachePolicyConfig:
         Comment: "Policy with caching enabled. Supports Gzip and Brotli compression."
@@ -159,9 +142,9 @@ Resources:
         Name: "Custom-CachingOptimized"
 
   CloudFrontDistribution:
-    UpdateReplacePolicy: "Delete"
+    UpdateReplacePolicy: !Ref UpdateReplacePolicySetting
     Type: "AWS::CloudFront::Distribution"
-    DeletionPolicy: "Delete"
+    DeletionPolicy: !Ref DeletionPolicySetting
     Properties:
       DistributionConfig:
         Logging:
@@ -185,17 +168,17 @@ Resources:
           S3OriginConfig:
             OriginAccessIdentity: ""
           OriginPath: ""
-          Id: "tristantech.org-iac"
+          Id: !Ref FrontEndBucketName
         ViewerCertificate:
           MinimumProtocolVersion: "TLSv1.2_2021"
           SslSupportMethod: "sni-only"
-          AcmCertificateArn: "arn:aws:acm:us-east-1:912311480070:certificate/80bf7507-ed8a-4de8-b7eb-56ef0c286e42"
+          AcmCertificateArn: !Sub "arn:aws:acm:us-east-1:${AWS::AccountId}:certificate/80bf7507-ed8a-4de8-b7eb-56ef0c286e42"
         PriceClass: "PriceClass_100"
         DefaultCacheBehavior:
           Compress: true
           FunctionAssociations: []
           LambdaFunctionAssociations: []
-          TargetOriginId: "tristantech.org-iac"
+          TargetOriginId: !Ref FrontEndBucketName
           ViewerProtocolPolicy: "redirect-to-https"
           GrpcConfig:
             Enabled: false
@@ -227,10 +210,10 @@ Resources:
           Items: []
         Enabled: true
         Aliases:
-        - "tristantech.org"
-        - "www.tristantech.org"
+        - !Ref DomainAlias1
+        - !Ref DomainAlias2
         IPV6Enabled: true
-        WebACLId: "arn:aws:wafv2:us-east-1:912311480070:global/webacl/CreatedByCloudFront-891b1432-5997-49e0-855f-bb709f051c9d/25a6a306-4657-4b01-8950-fe03f500012a"
+        WebACLId: !Sub "arn:aws:wafv2:us-east-1:${AWS::AccountId}:global/webacl/CreatedByCloudFront-891b1432-5997-49e0-855f-bb709f051c9d/25a6a306-4657-4b01-8950-fe03f500012a"
         HttpVersion: "http2"
         Restrictions:
           GeoRestriction:
@@ -239,9 +222,9 @@ Resources:
         CacheBehaviors: []
 
   CloudFrontOriginAccessControl:
-    UpdateReplacePolicy: "Delete"
+    UpdateReplacePolicy: !Ref UpdateReplacePolicySetting
     Type: "AWS::CloudFront::OriginAccessControl"
-    DeletionPolicy: "Delete"
+    DeletionPolicy: !Ref DeletionPolicySetting
     Properties:
       OriginAccessControlConfig:
         SigningBehavior: "always"
@@ -255,14 +238,14 @@ Resources:
     Properties:
       HostedZoneId: Z00273233K0LGAJK7OZOH
       RecordSets:
-        - Name: tristantech.org
+        - Name: !Ref DomainAlias1
           Type: A
           AliasTarget:
             HostedZoneId: Z2FDTNDATAQYW2
             DNSName: !GetAtt 
               - CloudFrontDistribution
               - DomainName
-        - Name: www.tristantech.org
+        - Name: !Ref DomainAlias2
           Type: A
           AliasTarget:
             HostedZoneId: Z2FDTNDATAQYW2
@@ -271,13 +254,13 @@ Resources:
             - DomainName
 
   DynamoDBTable:
-    UpdateReplacePolicy: "Delete"
+    UpdateReplacePolicy: !Ref UpdateReplacePolicySetting
     Type: "AWS::DynamoDB::Table"
-    DeletionPolicy: "Delete"
+    DeletionPolicy: !Ref DeletionPolicySetting
     Properties:
       SSESpecification:
         SSEEnabled: false
-      TableName: "website-visits-iac"
+      TableName: !Ref  DynamoDBTableName
       AttributeDefinitions:
       - AttributeType: "S"
         AttributeName: "count_id"
@@ -307,53 +290,46 @@ Resources:
       Runtime: nodejs22.x
       Role: !GetAtt LambdaRole.Arn
       Code: ./lambda/
-      #Events:
-        #HelloWorld:
-          #Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-          #Properties:
-            #Path: /hello
-            #Method: get
 
   LambdaPOSTPermissionForAPIGateway:
-    UpdateReplacePolicy: "Delete"
+    UpdateReplacePolicy: !Ref UpdateReplacePolicySetting
     Type: "AWS::Lambda::Permission"
-    DeletionPolicy: "Delete"
+    DeletionPolicy: !Ref DeletionPolicySetting
     Properties:
       FunctionName:
         Fn::GetAtt:
         - "MyLambdaFunction"
         - "Arn"
       Action: "lambda:InvokeFunction"
-      SourceArn: "arn:aws:execute-api:eu-central-1:912311480070:a3sfkwdhr3/*/POST/visitors"
+      SourceArn: !Sub "arn:aws:execute-api:eu-central-1:${AWS::AccountId}:a3sfkwdhr3/*/POST/visitors"
       Principal: "apigateway.amazonaws.com"
+
   LambdaGETPermissionForAPIGateway:
-    UpdateReplacePolicy: "Delete"
+    UpdateReplacePolicy: !Ref UpdateReplacePolicySetting
     Type: "AWS::Lambda::Permission"
-    DeletionPolicy: "Delete"
+    DeletionPolicy: !Ref DeletionPolicySetting
     Properties:
       FunctionName:
         Fn::GetAtt:
         - "MyLambdaFunction"
         - "Arn"
       Action: "lambda:InvokeFunction"
-      SourceArn: "arn:aws:execute-api:eu-central-1:912311480070:a3sfkwdhr3/*/GET/visitors"
+      SourceArn: !Sub "arn:aws:execute-api:eu-central-1:${AWS::AccountId}:a3sfkwdhr3/*/GET/visitors"
       Principal: "apigateway.amazonaws.com"
 
   LambdaRole:
-    UpdateReplacePolicy: "Delete"
+    UpdateReplacePolicy: !Ref UpdateReplacePolicySetting
     Type: "AWS::IAM::Role"
-    DeletionPolicy: "Delete"
+    DeletionPolicy: !Ref DeletionPolicySetting
     Properties:
       Path: "/service-role/"
-      #ManagedPolicyArns:
-      #- "arn:aws:iam::912311480070:policy/service-role/AWSLambdaBasicExecutionRole-9cbce26f-d618-453b-8571-18687de80142"
       MaxSessionDuration: 3600
       RoleName: "countNumberOfWebsiteVisits-role"
       Policies:
       - PolicyDocument:
           Version: "2012-10-17"
           Statement:
-          - Resource: "arn:aws:dynamodb:eu-central-1:912311480070:table/website-visits-iac"
+          - Resource: !Sub "arn:aws:dynamodb:eu-central-1:${AWS::AccountId}:table/${DynamoDBTableName}"
             Action: "dynamodb:GetItem"
             Effect: "Allow"
             Sid: "AllowGetItemCommand"
@@ -361,7 +337,7 @@ Resources:
       - PolicyDocument:
           Version: "2012-10-17"
           Statement:
-          - Resource: "arn:aws:dynamodb:eu-central-1:912311480070:table/website-visits-iac"
+          - Resource: !Sub "arn:aws:dynamodb:eu-central-1:${AWS::AccountId}:table/${DynamoDBTableName}"
             Action: "dynamodb:UpdateItem"
             Effect: "Allow"
             Sid: "AllowUpdateItemCommand"
@@ -373,23 +349,11 @@ Resources:
           Effect: "Allow"
           Principal:
             Service: "lambda.amazonaws.com"
-  #LambdaPermission00functioncountNumberOfWebsiteVisitors00A9ciX:
-    #UpdateReplacePolicy: "Delete"
-    #Type: "AWS::Lambda::Permission"
-    #DeletionPolicy: "Delete"
-    #Properties:
-      #FunctionName:
-        #Fn::GetAtt:
-        #- "LambdaFunction00countNumberOfWebsiteVisitors00pXgkj"
-        #- "Arn"
-      #Action: "lambda:InvokeFunction"
-      #SourceArn: "arn:aws:execute-api:eu-central-1:912311480070:y0218osvh0/*/GET/"
-      #Principal: "apigateway.amazonaws.com"
 
   IAMManagedPolicy:
-    UpdateReplacePolicy: "Delete"
+    UpdateReplacePolicy: !Ref UpdateReplacePolicySetting
     Type: "AWS::IAM::ManagedPolicy"
-    DeletionPolicy: "Delete"
+    DeletionPolicy: !Ref DeletionPolicySetting
     Properties:
       ManagedPolicyName: "AWSLambdaBasicExecutionRole-IAMManagedPolicy"
       Path: "/service-role/"
@@ -398,11 +362,11 @@ Resources:
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
-        - Resource: "arn:aws:logs:eu-central-1:912311480070:*"
+        - Resource: !Sub "arn:aws:logs:eu-central-1:${AWS::AccountId}:*"
           Action: "logs:CreateLogGroup"
           Effect: "Allow"
         - Resource:
-          - "arn:aws:logs:eu-central-1:912311480070:log-group:/aws/lambda/countNumberOfWebsiteVisits:*"
+          - !Sub "arn:aws:logs:eu-central-1:${AWS::AccountId}:log-group:/aws/lambda/countNumberOfWebsiteVisits:*"
           Action:
           - "logs:CreateLogStream"
           - "logs:PutLogEvents"
@@ -411,72 +375,10 @@ Resources:
       - Ref: LambdaRole
       Users: []
 
-  #LambdaFunction00countNumberOfWebsiteVisitors00pXgkj:
-    #UpdateReplacePolicy: "Delete"
-    #Type: "AWS::Lambda::Function"
-    #DeletionPolicy: "Delete"
-    #Properties:
-      #MemorySize: 128
-      #Description: ""
-      #TracingConfig:
-        #Mode: "PassThrough"
-      #Timeout: 3
-      #RuntimeManagementConfig:
-        #UpdateRuntimeOn: "Auto"
-      #Handler: "index.handler"
-      #Code:
-        #SourceKMSKeyArn:
-          #Ref: "LambdaFunction00countNumberOfWebsiteVisitors00pXgkjCodeSourceKMSKeyArn4C0qI"
-        #S3ObjectVersion:
-          #Ref: "LambdaFunction00countNumberOfWebsiteVisitors00pXgkjCodeS3ObjectVersionMERgx"
-        #S3Bucket:
-          #Ref: "LambdaFunction00countNumberOfWebsiteVisitors00pXgkjCodeS3BucketkdDlK"
-        #ZipFile:
-          #Ref: "LambdaFunction00countNumberOfWebsiteVisitors00pXgkjCodeZipFilev4439"
-        #ImageUri:
-          #Ref: "LambdaFunction00countNumberOfWebsiteVisitors00pXgkjCodeImageUrit188N"
-        #S3Key:
-          #Ref: "LambdaFunction00countNumberOfWebsiteVisitors00pXgkjCodeS3KeyqnJ4m"
-      #Role:
-        #Fn::GetAtt:
-        #- "IAMRole00countNumberOfWebsiteVisitorsrolen9d4noft00U4FRv"
-        #- "Arn"
-      #FileSystemConfigs: []
-      #FunctionName: "countNumberOfWebsiteVisitors"
-      #Runtime: "nodejs22.x"
-      #PackageType: "Zip"
-      #LoggingConfig:
-        #LogFormat: "Text"
-        #LogGroup: "/aws/lambda/countNumberOfWebsiteVisitors"
-      #RecursiveLoop: "Terminate"
-      #EphemeralStorage:
-        #Size: 512
-      #Architectures:
-      #- "x86_64"
-  #LambdaPermission00functioncountNumberOfWebsiteVisitors00xu0JA:
-    #UpdateReplacePolicy: "Delete"
-    #Type: "AWS::Lambda::Permission"
-    #DeletionPolicy: "Delete"
-    #Properties:
-      #FunctionName:
-        #Fn::GetAtt:
-        #- "LambdaFunction00countNumberOfWebsiteVisitors00pXgkj"
-        #- "Arn"
-      #Action: "lambda:InvokeFunction"
-      #SourceArn: "arn:aws:execute-api:eu-central-1:912311480070:tkarxrzkl1/*/POST/visitor-count"
-      #Principal: "apigateway.amazonaws.com"
-
-  #ApiGatewayDeploymentSg:
-    #UpdateReplacePolicy: "Delete"
-    #Type: "AWS::ApiGateway::Deployment"
-    #DeletionPolicy: "Delete"
-    #Properties:
-      #RestApiId:
-        #Ref: "ApiGatewayRestApi"
   ApiGatewayRestApi:
-    UpdateReplacePolicy: "Delete"
+    UpdateReplacePolicy: !Ref UpdateReplacePolicySetting
     Type: "AWS::ApiGateway::RestApi"
-    DeletionPolicy: "Delete"
+    DeletionPolicy: !Ref DeletionPolicySetting
     Properties:
       ApiKeySourceType: "HEADER"
       EndpointConfiguration:
@@ -493,21 +395,20 @@ Resources:
       RestApiId: !Ref ApiGatewayRestApi
 
   ApiGatewayDeployment:
-    UpdateReplacePolicy: "Delete"
+    UpdateReplacePolicy: !Ref UpdateReplacePolicySetting
     Type: "AWS::ApiGateway::Deployment"
-    DeletionPolicy: "Delete"
+    DeletionPolicy: !Ref DeletionPolicySetting
     DependsOn:
      - ApiGatewayMethod
      - ApiGatewayPostMethod
     Properties:
       RestApiId:
         Ref: "ApiGatewayRestApi"
-      #StageName:
-        #Ref: "ApiGatewayStage"
+
   ApiGatewayStage:
-    UpdateReplacePolicy: "Delete"
+    UpdateReplacePolicy: !Ref UpdateReplacePolicySetting
     Type: "AWS::ApiGateway::Stage"
-    DeletionPolicy: "Delete"
+    DeletionPolicy: !Ref DeletionPolicySetting
     Properties:
       RestApiId:
         Ref: "ApiGatewayRestApi"
@@ -517,7 +418,7 @@ Resources:
       CacheClusterSize: "0.5"
       TracingEnabled: false
       CacheClusterEnabled: false
-  #########################################################################################
+ 
   ApiGatewayMethod:    
     Type: AWS::ApiGateway::Method
     Properties:
@@ -540,15 +441,11 @@ Resources:
         IntegrationResponses:
           - StatusCode: 200
             ResponseParameters:
-              method.response.header.Access-Control-Allow-Origin: "'https://tristantech.org'"
-            #ResponseTemplates: 
-              #application/json: |
-               #{
-               #   
-               #}
+              method.response.header.Access-Control-Allow-Origin: !Sub "'https://${DomainAlias1}'"
       ResourceId: !GetAtt ApiGatewayResource.ResourceId
       RestApiId: !Ref ApiGatewayRestApi
       AuthorizationType: "NONE"
+
   ApiGatewayPostMethod:    
     Type: AWS::ApiGateway::Method
     Properties:
@@ -571,15 +468,11 @@ Resources:
         IntegrationResponses:
           - StatusCode: 200
             ResponseParameters:
-              method.response.header.Access-Control-Allow-Origin: "'https://tristantech.org'"
-            #ResponseTemplates: 
-              #application/json: |
-               #{
-               #   
-               #}
+              method.response.header.Access-Control-Allow-Origin: !Sub "'https://${DomainAlias1}'"
       ResourceId: !GetAtt ApiGatewayResource.ResourceId
       RestApiId: !Ref ApiGatewayRestApi
       AuthorizationType: "NONE"
+
   ApiGatewayOPTIONSMethod:    
     Type: AWS::ApiGateway::Method
     Properties:
@@ -593,127 +486,21 @@ Resources:
          ResponseModels: { "application/json": "Empty" }
       Integration: 
         IntegrationHttpMethod: POST
-        Type: AWS
+        Type: MOCK
         Uri: !Sub
           - arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/${lambdaArn}/invocations
           - lambdaArn: !GetAtt MyLambdaFunction.Arn
         RequestTemplates:
           application/json: |
             {
-                "statusCode": "200"
+                "statusCode": 200
             }
         IntegrationResponses:
           - StatusCode: 200
             ResponseParameters:
-              method.response.header.Access-Control-Allow-Origin: "'https://tristantech.org'"
+              method.response.header.Access-Control-Allow-Origin: !Sub "'https://${DomainAlias1}'"
               method.response.header.Access-Control-Allow-Methods: "'OPTIONS,POST'"
               method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'" 
       ResourceId: !GetAtt ApiGatewayResource.ResourceId
       RestApiId: !Ref ApiGatewayRestApi
       AuthorizationType: "NONE"
-
-
-      #ethodResponses: 
-       #- MethodResponse:
-            #ResponseModels: 
-              #Key: Value
-            #ResponseParameters: 
-              #Key: Value
-           #StatusCode: "200"
-     #OperationName: String
-     #RequestModels: 
-       #Key: Value
-     #RequestParameters: 
-       #Key: Value
-     #RequestValidatorId: String
-
-      #ApiGatewayDeploymentWG:
-    #UpdateReplacePolicy: "Delete"
-    #Type: "AWS::ApiGateway::Deployment"
-    #DeletionPolicy: "Delete"
-    #Properties:
-      #RestApiId:
-        #Ref: "ApiGatewayRestApi"
-  #ApiGatewayDeploymentHs:
-    #UpdateReplacePolicy: "Delete"
-    #Type: "AWS::ApiGateway::Deployment"
-    #DeletionPolicy: "Delete"
-    #Properties:
-      #RestApiId:
-        #Ref: "ApiGatewayRestApi"      
-
-#Resources:
-  #FrontEndBucket:
-    #Type: 'AWS::S3::Bucket'
-    #Properties:
-      #BucketName: tristantech.org-iac
-      #PublicAccessBlockConfiguration:
-        #BlockPublicAcls: false
-        #BlockPublicPolicy: false
-        #IgnorePublicAcls: false
-        #RestrictPublicBuckets: false
-      #WebsiteConfiguration:
-        #IndexDocument: index.html
-        
-  #FrontEndBucketPolicy:
-    #UpdateReplacePolicy: Delete
-    #Type: 'AWS::S3::BucketPolicy'
-    #DeletionPolicy: Delete
-    #Properties:
-      #Bucket: !Ref FrontEndBucket
-      #PolicyDocument:
-        #Version: '2012-10-17'
-        #Statement:
-          #- Sid: PublicReadForGetBucketObjects
-            #Effect: Allow
-            #Principal: '*'
-            #Action: 's3:GetObject'
-            #Resource:
-              #Fn::Join:
-                #- ''
-                #- - 'arn:aws:s3:::'
-                  #- Ref: 'FrontEndBucket'
-                  #- '/*'
-  #
-  #HelloWorldFunction:
-    #Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    #Properties:
-      #CodeUri: hello-world/
-      #Handler: app.lambdaHandler
-      #Runtime: nodejs22.x
-      #Architectures:
-      #- x86_64
-      #Events:
-        #HelloWorld:
-          #Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-          #Properties:
-            #Path: /hello
-            #Method: get
-
-  #ApplicationResourceGroup:
-    #Type: AWS::ResourceGroups::Group
-    #Properties:
-      #Name:
-        #Fn::Sub: ApplicationInsights-SAM-${AWS::StackName}
-      #ResourceQuery:
-        #Type: CLOUDFORMATION_STACK_1_0
-  #ApplicationInsightsMonitoring:
-    #Type: AWS::ApplicationInsights::Application
-    #Properties:
-      #ResourceGroupName:
-        #Ref: ApplicationResourceGroup
-      #AutoConfigurationEnabled: 'true'
-
-#Outputs:
-  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
-  # Find out more about other implicit resources you can reference within SAM
-  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  #HelloWorldApi:
-    #Description: API Gateway endpoint URL for Prod stage for Hello World function
-    #Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
-  #HelloWorldFunction:
-    #Description: Hello World Lambda Function ARN
-    #Value: !GetAtt HelloWorldFunction.Arn
-  #HelloWorldFunctionIamRole:
-    #Description: Implicit IAM Role created for Hello World function
-    #Value: !GetAtt HelloWorldFunctionRole.Arn
