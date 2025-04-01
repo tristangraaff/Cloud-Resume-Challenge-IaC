@@ -3,7 +3,7 @@ const allowedOrigins = [
     "https://www.tristantech.org",
 ];
 
-export const handler = (event) => {
+export const handler = async (event) => {
     const origin = event.headers.Origin || event.headers.origin;
     let goodOrigin = false;
 
@@ -15,12 +15,12 @@ export const handler = (event) => {
         });
     }
 
-    context.succeed({ //Hier async await met return van maken
+    return { //Hier async await met return van maken
         headers: {
             "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
-            "Access-Control-Allow-Methods": "OPTIONS,POST",
+            "Access-Control-Allow-Methods": "OPTIONS, POST, GET",
             "Access-Control-Allow-Origin": goodOrigin ? origin : allowedOrigins[0]
         },
-        statusCode: 204
-    });
+        //statusCode: 204
+    }
 }

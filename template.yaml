@@ -484,10 +484,10 @@ Resources:
          ResponseModels: { "application/json": "Empty" }
       Integration: 
         IntegrationHttpMethod: POST
-        Type: MOCK
+        Type: AWS
         Uri: !Sub
           - arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/${lambdaArn}/invocations
-          - lambdaArn: !GetAtt MyLambdaFunction.Arn
+          - lambdaArn: !GetAtt AllowMultipleOriginsLambdaFunction.Arn
         RequestTemplates:
           application/json: |
             {
@@ -509,6 +509,6 @@ Resources:
       FunctionName: allowMultipleOrigins
       Handler: allowMultipleOrigins.handler
       Runtime: nodejs22.x
-      #Role: !GetAtt LambdaRole.Arn
+      Role: !GetAtt LambdaRole.Arn
       Code: ./lambda/
     
