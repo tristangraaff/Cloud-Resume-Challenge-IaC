@@ -1,8 +1,19 @@
 import { DynamoDBClient, GetItemCommand, UpdateItemCommand } from "@aws-sdk/client-dynamodb";
-const client = new DynamoDBClient({ region: "eu-central-1" });
+import { LambdaClient, InvokeCommand } from "@aws-sdk/client-lambda";
+const dynamoDBClient = new DynamoDBClient({ region: "eu-central-1" });
+const lambdaClient = new LambdaClient();
 
 export const handler = async (event) => {
   console.log(event['http-method']);
+
+  const params = {
+    FunctionName: 'allowMultipleOrigins',
+    InvocationType: 'RequestResponse',
+    Payload: JSON.stringify(event)
+  }
+
+  const command = new InvokeCommand(params);
+  const response = await lambdaClient.send(command);
 
   if (event['http-method'] === 'POST') {
     const params = {
@@ -18,7 +29,7 @@ export const handler = async (event) => {
     };
   
     try {
-      await client.send(new UpdateItemCommand(params));
+      await dynamoDBClient.send(new UpdateItemCommand(params));
       return {
         statusCode: 200,
         body: JSON.stringify({ message: 'Visit count updated successfully' })
@@ -42,7 +53,7 @@ export const handler = async (event) => {
     };
 
     try {
-      const response = await client.send(new GetItemCommand(params));
+      const response = await dynamoDBClient.send(new GetItemCommand(params));
       const visitCount = response.Item.visit_count.N;
       return {
         statusCode: 200,
