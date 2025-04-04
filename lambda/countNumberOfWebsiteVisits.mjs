@@ -13,11 +13,18 @@ export const handler = async (event) => {
   }
 
   let returnCommand = 'Command was not sent succesfully.';
+  let allowMultipleOriginsResponseDecoded;
 
   try {
-    await lambdaClient.send(new InvokeCommand(allowMultipleOriginsParams));
-    returnCommand = 'Command was sent succesfully.';
+    const allowMultipleOriginsResponse = await lambdaClient.send(new InvokeCommand(allowMultipleOriginsParams));
+    allowMultipleOriginsResponseDecoded = JSON.parse(Buffer.from(allowMultipleOriginsResponse.Payload).toString());
+
+    if (allowMultipleOriginsResponse.statusCode === 403) {
+      return allowMultipleOriginsResponse
+    }
+
   } catch (error) {
+    console.error('Error: ' + error);
     return {
       statusCode: 500,
       body: JSON.stringify({ message: 'Error sending allowMultipleOrigins command' })
@@ -67,7 +74,8 @@ export const handler = async (event) => {
       const visitCount = response.Item.visit_count.N;
       return {
         statusCode: 200,
-        body: JSON.stringify({ visitCount, returnCommand })
+        body: JSON.stringify({ visitCount }),
+        allowMultipleOriginsResponse: JSON.stringify({ allowMultipleOriginsResponseDecoded })
       };
     } catch (error) {
       console.error('Error retrieving visit count:', error);

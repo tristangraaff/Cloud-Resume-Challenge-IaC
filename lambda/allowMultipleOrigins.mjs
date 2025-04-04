@@ -5,22 +5,24 @@ const allowedOrigins = [
 
 export const handler = async (event) => {
     const origin = event.headers.Origin
-    let goodOrigin = false;
+    const allowedOrigin = allowedOrigins.find((allowed) => origin && origin.match(allowed));
 
-    if (origin) {
-        allowedOrigins.forEach( allowedOrigin => {
-            if (!goodOrigin && origin.match(allowedOrigin)) {
-                goodOrigin = true;
-            }
-        });
+    if (!allowedOrigin) {
+        return {
+            statusCode: 403,
+            headers: {
+                "Content-Type": "text/plain"    
+            },
+            body: "Forbidden: Origin not allowed."
+        }
     }
 
-    return { 
+    return {
+        statusCode: 200, 
         headers: {
             "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
             "Access-Control-Allow-Methods": "OPTIONS, POST, GET",
-            "Access-Control-Allow-Origin": origin
-        },
-        //statusCode: 204
+            "Access-Control-Allow-Origin": allowedOrigin
+        }
     }
 }

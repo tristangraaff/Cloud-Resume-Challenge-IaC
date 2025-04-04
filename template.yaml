@@ -340,6 +340,14 @@ Resources:
             Effect: "Allow"
             Sid: "AllowUpdateItemCommand"
         PolicyName: "AllowUpdateItemCommand"
+      - PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+          - Resource: !Sub "arn:aws:lambda:eu-central-1:${AWS::AccountId}:function:allowMultipleOrigins"
+            Action: "lambda:InvokeFunction"
+            Effect: "Allow"
+            Sid: "AllowUpdateItemCommand"
+        PolicyName: "AllowUpdateItemCommand"
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
