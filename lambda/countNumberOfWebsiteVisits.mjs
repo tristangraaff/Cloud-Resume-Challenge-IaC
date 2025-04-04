@@ -6,14 +6,24 @@ const lambdaClient = new LambdaClient();
 export const handler = async (event) => {
   console.log(event['http-method']);
 
-  const params = {
+  const allowMultipleOriginsParams = {
     FunctionName: 'allowMultipleOrigins',
     InvocationType: 'RequestResponse',
     Payload: JSON.stringify(event)
   }
 
-  const command = new InvokeCommand(params);
-  const response = await lambdaClient.send(command);
+  let returnCommand = 'Command was not sent succesfully.';
+
+  try {
+    await lambdaClient.send(new InvokeCommand(allowMultipleOriginsParams));
+    returnCommand = 'Command was sent succesfully.';
+  } catch (error) {
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ message: 'Error sending allowMultipleOrigins command' })
+    }
+  }
+
 
   if (event['http-method'] === 'POST') {
     const params = {
@@ -32,13 +42,13 @@ export const handler = async (event) => {
       await dynamoDBClient.send(new UpdateItemCommand(params));
       return {
         statusCode: 200,
-        body: JSON.stringify({ message: 'Visit count updated successfully' })
+        body: JSON.stringify({ message: returnCommand + ' Visit count updated successfully.' })
       };
     } catch (error) {
       console.error('Error updating visit count:', error);
       return {
         statusCode: 500,
-        body: JSON.stringify({ message: 'Error updating visit count' })
+        body: JSON.stringify({ message: returnCommand + ' Error updating visit count' })
       }
     }
   }
@@ -57,13 +67,13 @@ export const handler = async (event) => {
       const visitCount = response.Item.visit_count.N;
       return {
         statusCode: 200,
-        body: JSON.stringify({ visitCount })
+        body: JSON.stringify({ visitCount, returnCommand })
       };
     } catch (error) {
       console.error('Error retrieving visit count:', error);
       return {
         statusCode: 500,
-        body: JSON.stringify({ message: 'Error retrieving visit count' })
+        body: JSON.stringify({ message: returnCommand + ' Error retrieving visit count' })
       };
     }
   }

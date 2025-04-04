@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', async (event) => {
             if (!response.ok) throw new Error('Network response was not ok');
             const data = await response.json();
             const responseBody = JSON.parse(data.body)
+            console.log(responseBody);
             console.log("Visit count: " + responseBody.visitCount);
             document.getElementById('visit-count').innerText = responseBody.visitCount;
         } catch (error) {
