@@ -4,7 +4,6 @@ const dynamoDBClient = new DynamoDBClient({ region: "eu-central-1" });
 const lambdaClient = new LambdaClient();
 
 export const handler = async (event) => {
-  console.log(event['http-method']);
 
   const allowMultipleOriginsParams = {
     FunctionName: 'allowMultipleOrigins',
@@ -12,7 +11,6 @@ export const handler = async (event) => {
     Payload: JSON.stringify(event)
   }
 
-  let returnCommand = 'Command was not sent succesfully.';
   let allowMultipleOriginsResponseDecoded;
 
   try {
@@ -20,7 +18,7 @@ export const handler = async (event) => {
     allowMultipleOriginsResponseDecoded = JSON.parse(Buffer.from(allowMultipleOriginsResponse.Payload).toString());
 
     if (allowMultipleOriginsResponse.statusCode === 403) {
-      return allowMultipleOriginsResponse
+      return 'allowMultipleOrigins function returned a 403! Function response: ' + allowMultipleOriginsResponseDecoded
     }
 
   } catch (error) {
@@ -43,19 +41,20 @@ export const handler = async (event) => {
         ':increment': { 'N': '1'},
       },
       ReturnValues: 'UPDATED_NEW'
-    };
+    }
   
     try {
       await dynamoDBClient.send(new UpdateItemCommand(params));
       return {
         statusCode: 200,
-        body: JSON.stringify({ message: returnCommand + ' Visit count updated successfully.' })
-      };
+        body: JSON.stringify({ message: 'Visit count updated successfully.' }),
+        allowMultipleOriginsResponse: allowMultipleOriginsResponseDecoded
+      }
     } catch (error) {
       console.error('Error updating visit count:', error);
       return {
         statusCode: 500,
-        body: JSON.stringify({ message: returnCommand + ' Error updating visit count' })
+        body: JSON.stringify({ message: 'Error updating visit count' })
       }
     }
   }
@@ -67,7 +66,7 @@ export const handler = async (event) => {
         'count_id': { 'S': 'total' }
       },
       ProjectionExpression: 'visit_count'
-    };
+    }
 
     try {
       const response = await dynamoDBClient.send(new GetItemCommand(params));
@@ -75,14 +74,14 @@ export const handler = async (event) => {
       return {
         statusCode: 200,
         body: JSON.stringify({ visitCount }),
-        allowMultipleOriginsResponse: JSON.stringify({ allowMultipleOriginsResponseDecoded })
-      };
+        allowMultipleOriginsResponse: allowMultipleOriginsResponseDecoded
+      }
     } catch (error) {
       console.error('Error retrieving visit count:', error);
       return {
         statusCode: 500,
         body: JSON.stringify({ message: returnCommand + ' Error retrieving visit count' })
-      };
+      }
     }
   }
 }
