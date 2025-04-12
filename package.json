@@ -26,5 +26,9 @@
     "@babel/preset-env": "^7.26.9",
     "babel-jest": "^29.7.0",
     "jest": "^29.7.0"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.788.0",
+    "@aws-sdk/client-lambda": "^3.787.0"
   }
 }

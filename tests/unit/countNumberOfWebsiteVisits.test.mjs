@@ -1,53 +1,45 @@
+import { jest } from '@jest/globals';
 import { handler } from '../../lambda/countNumberOfWebsiteVisits.mjs';
+import { DynamoDBClient, GetItemCommand, UpdateItemCommand } from "@aws-sdk/client-dynamodb";
+import { LambdaClient, InvokeCommand } from "@aws-sdk/client-lambda";
+
+
+//jest.mock("@aws-sdk/client-dynamodb");
+jest.mock("@aws-sdk/client-lambda");
 
 describe('handler function', () => {
-    it('should allow a request from an allowed origin', async () => {
-        const event = {
-            headers: {
-                Origin: "https://tristantech.org"
-            }
-        };
-        
-        const response = await handler(event);
-        
-        expect(response.statusCode).toBe(200);
-        expect(response.headers["Access-Control-Allow-Origin"]).toBe("https://tristantech.org");
+    //const mockDynamoDBClient = DynamoDBClient.prototype;
+    const mockLambdaClient = LambdaClient.prototype;
+
+    beforeEach(() => {
+        jest.resetAllMocks();
     });
 
-    it('should allow a request from another allowed origin', async () => {
+    it('should return a 403 error message and allowMultipleOrigins response payload when status code is 403', async () => {   
         const event = {
-            headers: {
-                Origin: "https://www.tristantech.org"
-            }
-        };
-        
-        const response = await handler(event);
-        
-        expect(response.statusCode).toBe(200);
-        expect(response.headers["Access-Control-Allow-Origin"]).toBe("https://www.tristantech.org");
-    });
+            "headers": { 
+                "Origin": "https://tristantech.org"
+                },
+            "statusCode": 200,
+            "http-method": "GET"
+        }
 
-    it('should reject a request from a disallowed origin', async () => {
-        const event = {
+        const allowMultipleOriginsResponsePayload = {
+            statusCode: 403,
             headers: {
-                Origin: "https://unknownorigin.com"
-            }
-        };
+                "Content-Type": "text/plain"    
+            },
+            body: "Forbidden: Origin not allowed."
+        }
         
-        const response = await handler(event);
-        
-        expect(response.statusCode).toBe(403);
-        expect(response.body).toBe("Forbidden: Origin not allowed.");
-    });
+        mockLambdaClient.send.mockResolvedValueOnce({
+            Payload: Buffer.from(JSON.stringify(allowMultipleOriginsResponsePayload)),
+        });
 
-    it('should reject a request with no origin header', async () => {
-        const event = {
-            headers: {}
-        };
-        
         const response = await handler(event);
-        
-        expect(response.statusCode).toBe(403);
-        expect(response.body).toBe("Forbidden: Origin not allowed.");
+
+        expect(response).toContain('allowMultipleOrigins function returned a 403!');
+        expect(response).toContain('{}'); // Decoded empty response
+        //expect(mockLambdaClient.send).toHaveBeenCalledWith(expect.any(InvokeCommand));
     });
 });

@@ -4,7 +4,7 @@ export default {
 
   // Use babel-jest to transform the ES module code.
   transform: {
-    '^.+\\.mjs$': 'babel-jest'
+    //'^.+\\.mjs$': 'babel-jest'
   },
   testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.mjs$',
   // Optionally specify the test environment (the default is 'node').
