@@ -17,15 +17,19 @@ export const handler = async (event) => {
     const allowMultipleOriginsResponse = await lambdaClient.send(new InvokeCommand(allowMultipleOriginsParams));
     allowMultipleOriginsResponseDecoded = JSON.parse(Buffer.from(allowMultipleOriginsResponse.Payload).toString());
 
-    if (allowMultipleOriginsResponse.statusCode === 403) {
-      return 'allowMultipleOrigins function returned a 403! Function response: ' + allowMultipleOriginsResponseDecoded
+    if (allowMultipleOriginsResponseDecoded.statusCode === 403) {
+      return { 
+        errorMessage: 'allowMultipleOrigins function returned a 403!',
+        allowMultipleOriginsResponse: allowMultipleOriginsResponseDecoded
+      }
     }
 
   } catch (error) {
     console.error('Error: ' + error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ message: 'Error sending allowMultipleOrigins command' })
+      body: JSON.stringify({ message: 'Error sending allowMultipleOrigins command' }),
+      error: error
     }
   }
 
