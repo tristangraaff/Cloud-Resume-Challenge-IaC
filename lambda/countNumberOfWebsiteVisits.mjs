@@ -29,7 +29,7 @@ export const handler = async (event) => {
     return {
       statusCode: 500,
       body: {
-        message: 'Error sending allowMultipleOrigins command',
+        message: 'Unexpected error sending allowMultipleOrigins command',
         error: error
       }
     }
@@ -60,7 +60,8 @@ export const handler = async (event) => {
       console.error('Error updating visit count:', error);
       return {
         statusCode: 500,
-        body: JSON.stringify({ message: 'Error updating visit count' })
+        body: JSON.stringify({ message: 'Error updating visit count' }),
+        error: error
       }
     }
   }
