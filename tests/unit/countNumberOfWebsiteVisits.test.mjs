@@ -1,15 +1,14 @@
-jest.mock("@aws-sdk/client-dynamodb", () => ({
-    DynamoDBClient: jest.fn(() => ({
-        send: jest.fn(() => ({
-            statusCode: 200,
-            body: JSON.stringify({ message: 'Visit count updated successfully.' }),
-        })),
-    })),
-}));
-
 import { expect, jest } from '@jest/globals';
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { LambdaClient } from "@aws-sdk/client-lambda";
+// jest.mock("@aws-sdk/client-dynamodb", () => ({
+//     DynamoDBClient: jest.fn(() => ({
+//         send: jest.fn(() => ({
+//             statusCode: 200,
+//             body: JSON.stringify({ message: 'Visit count updated successfully.' }),
+//         })),
+//     })),
+// }));
 import { handler } from '../../lambda/countNumberOfWebsiteVisits.mjs';
 
 describe("handler function", () => {
@@ -79,20 +78,26 @@ describe("handler function", () => {
             })),
         }
 
-        const lambdaResponse = LambdaClient.prototype.send = jest.fn(() => {
+        const mockDynamoDBClient = {
+            send: jest.fn((command) => ({
+                body: "Succes"
+            }))
+        }
+
+        LambdaClient.prototype.send = jest.fn(() => {
             return allowMultipleOriginsMockResponse;
         });
         console.log(allowMultipleOriginsMockResponse);
         console.log(JSON.parse(Buffer.from(allowMultipleOriginsMockResponse.Payload).toString()));
         
-        DynamoDBClient.prototype.send = jest.fn(() => {
-            return {
-                statusCode: 200,
-                body: JSON.stringify({ message: 'Visit count updated successfully.' }),
-            }
-        });
+        // DynamoDBClient.send = jest.fn(() => {
+        //     return {
+        //         statusCode: 200,
+        //         body: JSON.stringify({ message: 'Visit count updated successfully.' }),
+        //     }
+        // });
 
-        const functionResponse = await handler(event);
+        const functionResponse = await handler(event, mockDynamoDBClient);
         console.log(functionResponse);
         expect(functionResponse.statusCode).toBe(200);
         expect(functionResponse.body).toContain("{ message: 'Visit count updated successfully.' }");

@@ -1,9 +1,8 @@
 import { DynamoDBClient, GetItemCommand, UpdateItemCommand } from "@aws-sdk/client-dynamodb";
 import { LambdaClient, InvokeCommand } from "@aws-sdk/client-lambda";
-const dynamoDBClient = new DynamoDBClient({ region: "eu-central-1" });
 const lambdaClient = new LambdaClient();
 
-export const handler = async (event) => {
+export const handler = async (event, dynamoDBClient = new DynamoDBClient({ region: "eu-central-1" })) => {
 
   const allowMultipleOriginsParams = {
     FunctionName: 'allowMultipleOrigins',
@@ -34,7 +33,6 @@ export const handler = async (event) => {
       }
     }
   }
-
 
   if (event['http-method'] === 'POST') {
     const params = {
